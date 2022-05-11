@@ -15,18 +15,24 @@
 const abi = [{"constant": false,"inputs": [{"name": "v","type": "string"}],"name": "set","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "get","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"},{"inputs": [],"payable": false,"stateMutability": "nonpayable","type": "constructor"}];
 const contractAddress = "0x8abb77ff22f8966729603bd49c5c049c4294efd5";
 
+let address = null;
 let provider = null;
 let contract = null;
 let contractWithSigner = null;
 
-try{
-	provider = new ethers.providers.Web3Provider(window.ethereum);
-	contract = new ethers.Contract(contractAddress, abi, provider);
-	contractWithSigner = contract.connect(provider.getSigner() );
+async function init(){
+	try{
+		let response = await window.ethereum.request({method: 'eth_requestAccounts'});
+		address = response[0];
+		
+		provider = new ethers.providers.Web3Provider(window.ethereum);
+		contract = new ethers.Contract(contractAddress, abi, provider);
+		contractWithSigner = contract.connect(provider.getSigner() );
+	}catch(err){
+		alert(err.message);
+	}
 }
-catch(err){
-	alert(err.message);
-}
+init();
 
 async function onGetValueBtn(){
 	try{
@@ -43,6 +49,7 @@ async function onSetValueBtn(){
 		let tx = await contractWithSigner.set(newValue);
 		alert(tx.hash);
 		
+		document.querySelector('#showValue').value="";
 		await tx.wait();
 		onGetValueBtn();
 	}catch(err){
