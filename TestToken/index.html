@@ -1,1 +1,75 @@
-test
+<html>
+<head> 
+	<title>Hello World</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<button onclick="onAddTokenBtn()">新增TestToken代幣資料到MetaMask</button><br>
+	<button onclick="onGetTokenBtn()">獲得TestToken代幣</button><br>
+	<a href="https://rinkebyfaucet.com/"  target="_blank">rinkeby水龍頭網站</a>
+</body>
+
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script>
+
+// The Contract interface
+const abi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"mint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"INITIAL_SUPPLY","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"}];
+const contractAddress = "0xac6f777d210636c006fc5511b28338241d146f72";
+
+let address = null;
+let provider = null;
+let contract = null;
+let contractWithSigner = null;
+
+async function init(){
+	try{
+		let response = await window.ethereum.request({method: 'eth_requestAccounts'});
+		address = response[0];
+		
+		//切換到rinkeby測試鏈
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
+		
+		provider = new ethers.providers.Web3Provider(window.ethereum);
+		contract = new ethers.Contract(contractAddress, abi, provider);
+		contractWithSigner = contract.connect(provider.getSigner() );
+	}catch(err){
+		alert(err.message);
+	}
+}
+init();
+
+async function onAddTokenBtn(){
+	try {
+		const isAdded = await window.ethereum.request({
+			method: 'wallet_watchAsset',
+			params: {
+				type: 'ERC20', 
+				options: {
+					address: contractAddress,
+					symbol: "TEST",
+					decimals: 2,
+					image: "https://raw.githubusercontent.com/vcckvv/SmartContract/gh-pages/TestToken/icon.png",
+				},
+	 	   },
+		});
+	}catch(error){
+		alert(err.message);
+	}
+}
+
+async function onGetTokenBtn(){
+	try{
+		let tx = await contractWithSigner.mint();
+		alert("https://rinkeby.etherscan.io/tx/" + tx.hash);
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+</script>
+</html>
