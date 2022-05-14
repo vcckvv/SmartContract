@@ -38,11 +38,23 @@ async function init(){
 		
 		contract = new ethers.Contract(contractAddress, abi, provider);
 		contractWithSigner = contract.connect(provider.getSigner() );
+		
 	}catch(err){
 		alert(err.message);
 	}
 }
 init();
+
+window.ethereum.on('accountsChanged', function (accounts) {
+	init();
+});
+
+window.ethereum.on('chainChanged', async function(networkId){
+	if(networkId!=4){
+		alert("this only works on rinkeby");
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
+	}
+});
 
 async function onAddTokenBtn(){
 	try {
