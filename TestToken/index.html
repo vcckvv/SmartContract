@@ -4,6 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
+	<input id="showAddress" readonly /><input id="showBalance" readonly />
 	<button onclick="onAddTokenBtn()">新增TestToken代幣資料到MetaMask</button><br>
 	<button onclick="onGetTokenBtn()">獲得TestToken代幣</button><br>
 	<a href="https://rinkebyfaucet.com/"  target="_blank">rinkeby水龍頭網站</a>
@@ -25,11 +26,14 @@ async function init(){
 	try{
 		let response = await window.ethereum.request({method: 'eth_requestAccounts'});
 		address = response[0];
+		document.querySelector('#showAddress').value=address;
 		
 		//切換到rinkeby測試鏈
 		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
 		
 		provider = new ethers.providers.Web3Provider(window.ethereum);
+		document.querySelector('#showBalance').value=await provider.getBalance(address);
+		
 		contract = new ethers.Contract(contractAddress, abi, provider);
 		contractWithSigner = contract.connect(provider.getSigner() );
 	}catch(err){
@@ -50,7 +54,7 @@ async function onAddTokenBtn(){
 					decimals: 2,
 					image: "https://raw.githubusercontent.com/vcckvv/SmartContract/gh-pages/TestToken/icon.png",
 				},
-	 	   },
+			},
 		});
 	}catch(error){
 		alert(err.message);
