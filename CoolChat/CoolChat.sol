@@ -1,4 +1,4 @@
-﻿pragma solidity ^0.8.0;
+pragma solidity ^0.8.0;
 // SPDX-License-Identifier: CC-BY-SA-4.0
 
 contract CoolChat {
@@ -6,7 +6,7 @@ contract CoolChat {
 
 	mapping (address => string) 	addrNameMap;
 	mapping (string => bool) 		nameUseMap;
-    
+	
 	address[] writerArray;
 	string[] writerNameArray;
 	string[] articleArray;
@@ -22,14 +22,14 @@ contract CoolChat {
 
 	function getArticle(uint256 index) public view returns (address, string memory, string memory) {
 		require(index<articleArray.length);
-    
+	
 		return (writerArray[index], writerNameArray[index], articleArray[index]);
 	}
 
-	function getArticles(uint256 index, uint256 count) public view returns (address[] memory, string[] memory, string[] memory) {
+	function getArticle(uint256 index, uint256 count) public view returns (address[] memory, string[] memory, string[] memory) {
 		require(count>=1);
 		require(index+count-1<articleArray.length);
-	    
+		
 		address[] memory outWriterArray=new address[](count);
 		string[] memory outWriterNameArray=new string[](count);
 		string[] memory outArticleArray=new string[](count);
@@ -46,7 +46,7 @@ contract CoolChat {
 
 	function addArticle(string memory str) public {
 		require(bytes(str).length>0 && bytes(str).length<=3000);//utf8中文字最多1000字
-    	
+		
 		articleArray.push(str);
 		writerArray.push(msg.sender);
 		writerNameArray.push(addrNameMap[msg.sender]);
@@ -65,11 +65,11 @@ contract CoolChat {
 		}
 	}
 	
-    function isUsedName(string memory name) public view returns (bool) {
+	function isUsedName(string memory name) public view returns (bool) {
 		return nameUseMap[name];
 	}
 
-    function getWriterName(address addr) public view returns (string memory) {
+	function getWriterName(address addr) public view returns (string memory) {
 		return addrNameMap[addr];
 	}
 
