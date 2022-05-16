@@ -1,1 +1,306 @@
-CoolChat
+<html>
+<head> 
+	<title>CoolChat</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body align="center">
+	<table align="center">
+		<tr align="left"><td>帳號位址：<input id="showAddress" size="50" readonly /></td></tr>
+		<tr align="left"><td>餘額：<input id="showBalance" size="40" readonly /></div></td></tr>
+		<tr align="left"><td>名字：<input id="showName" size="50" maxlength="30" />　<button onclick="onSetNameBtn()" >設定名字</button></td></tr>
+		<tr align="left"><td>輸入文章內容：</td></tr>
+		<tr><td><textarea id="inputText" rows="5" cols="70"  maxlength="1000"></textarea></td></tr>
+		<tr align="left"><td><button onclick="onPostBtn()">發出文章</button>　<a href="https://rinkebyfaucet.com/" target="_blank">rinkeby水龍頭網站</a></td></tr>
+	</table>
+	<hr>
+	<div id="articleList">
+		<table name="table" align="center">
+			<tr align="left"><td name="writer"></td></tr>
+			<tr><td><textarea name="article" rows="5" cols="70"  maxlength="1000" readonly></textarea></td></tr>
+		</table><br>
+	</div>
+	<hr>
+	<div id="pageList" align="center">
+	</div>
+</body>
+
+<style>
+
+body, td{
+	color: #D1D5DB;
+	background-color: #1F2937;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+input{
+	color: #D1D5DB;
+	background-color: #374151;
+	border-radius: 5px;
+}
+
+textarea{
+	resize: vertical;
+	color: #D1D5DB;
+	background-color: #374151;
+	border-radius: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+button{
+	color: #FAFAFB; 
+	background-color: #6B7280;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+button:hover{
+	color: #FAFAFB;
+	background-color: #4B5563;
+}
+
+a{
+	color: #60A5FA;
+}
+
+</style>
+
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script>
+
+const pageSize=20;//一頁放多少文章
+let articleCount = 0;
+let pageCount = 0;
+let nowPage = 0;
+
+let blockStr=document.querySelector('#articleList').innerHTML;
+let allBlockStr=blockStr;
+for(let i=0; i<pageSize-1; i++){
+	allBlockStr+=blockStr;
+}
+document.querySelector('#articleList').innerHTML=allBlockStr;
+
+let tables=document.getElementsByName("table");
+let writers=document.getElementsByName("writer");
+let articleAreas=document.getElementsByName("article");
+
+//https://rinkeby.etherscan.io/address/0x87Daeb0B937A53926335f4173B7Af38711BB8d25#readContract
+
+// The Contract interface
+const abi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"string","name":"str","type":"string"}],"name":"addArticle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getArticle","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getArticleCount","outputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"getArticles","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"addr","type":"address"}],"name":"getWriterName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"name","type":"string"}],"name":"isUsedName","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"name","type":"string"}],"name":"setWriterName","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"num","type":"uint256"}],"name":"testMassArticle","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const contractAddress = "0x87Daeb0B937A53926335f4173B7Af38711BB8d25";
+
+let address = null;
+let provider = null;
+let contract = null;
+let contractWithSigner = null;
+
+
+async function initWeb3(isInitArticle){
+	try{
+		let response = await window.ethereum.request({method: 'eth_requestAccounts'});
+		address = response[0];
+		document.querySelector('#showAddress').value=address;
+		
+		//切換到rinkeby測試鏈
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
+		
+		provider = new ethers.providers.Web3Provider(window.ethereum);
+		updateBalance();
+		
+		contract = new ethers.Contract(contractAddress, abi, provider);
+		contractWithSigner = contract.connect(provider.getSigner() );
+		
+		document.querySelector('#showName').value=await contract.getWriterName(address);
+		
+		if(isInitArticle){
+			initArticle();
+		}
+		
+	}catch(err){
+		alert(err.message);
+	}
+}
+initWeb3(true);
+
+window.ethereum.on('accountsChanged', function(accounts){
+	initWeb3(false);
+});
+
+window.ethereum.on('chainChanged', async function(networkId){
+	if(networkId!=4){
+		alert("this only works on rinkeby");
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
+	}
+});
+
+async function initArticle(){
+	try{
+		articleCount = await contract.getArticleCount();
+		pageCount = Math.ceil(articleCount/pageSize);
+
+		showArticles(0);
+		
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function showArticles(pageNum){
+	if(pageNum<0 || pageNum>=pageCount){
+		return;
+	}
+	
+	nowPage=pageNum;
+	let getCount=pageSize;
+	if(pageNum==pageCount-1){
+		if(articleCount==0){
+			for(let i=0; i<pageSize ; i++){
+				tables[i].style.display="none";
+			}
+			document.querySelector('#pageList').innerHTML="";
+			return;
+		}
+		
+		getCount=articleCount%pageSize;
+		if(getCount==0){
+			getCount=pageSize;
+		}
+		else{
+			for(i=getCount; i<pageSize ; i++){
+				tables[i].style.display="none";
+			}
+		}
+	}
+	
+	let startIndex=articleCount - pageNum*pageSize - getCount;
+	
+	let data=null;
+	try{
+		data = await contract.getArticles(startIndex, getCount);
+	}catch(err){
+		alert(err.message);
+		return;
+	}
+	
+	for(let i=0; i<getCount; i++){
+		let articleIndex = startIndex+getCount-1-i;
+		let index = getCount-1-i;
+			
+		let name=data[1][index];
+		if(name==""){
+			name="無名";
+		}
+		else{
+			name=name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		}
+		
+		tables[i].style.display="initial";
+		writers[i].innerHTML=articleIndex+ "　"+ data[0][index]+ "<br>("+ name+ ")";
+		articleAreas[i].value=data[2][index];
+	}
+	
+	const nearNum=3;
+	let pageList=document.querySelector('#pageList');
+	let listStr="<button id='page0' onclick='showArticles(0)'>0</button>";
+	
+	if(pageNum-nearNum>=2){
+		listStr+="..."
+	}
+	
+	let start=pageNum-nearNum;
+	if(start<=0){
+		start=1;
+	}
+	
+	let end=pageNum+nearNum;
+	if(end>=pageCount){
+		end=pageCount-1;
+	}
+	
+	for(let i=start; i<=end; i++){
+		listStr+="<button id='page" + i + "' onclick='showArticles(" + i + ")'>" + i + "</button>";
+	}
+	
+	if(end<pageCount-2){
+		listStr+="...<button id='page" + (pageCount-1) + "' onclick='showArticles(" + (pageCount-1) + ")'>" + (pageCount-1) + "</button>";
+	}
+	else if(end==pageCount-2){
+		listStr+="<button id='page" + (pageCount-1) + "' onclick='showArticles(" + (pageCount-1) + ")'>" + (pageCount-1) + "</button>";
+	}
+	
+	pageList.innerHTML=listStr;
+	let nowPageBtn=document.querySelector("#page" + pageNum);
+	nowPageBtn.style="background-color: #B83C11";
+	nowPageBtn.onclick="";
+	
+	document.querySelector('#articleList').scrollIntoView();
+}
+
+async function onSetNameBtn(){
+	try{
+		let newName=document.querySelector('#showName').value;
+		if(newName.length<=0){
+			alert("名字不得為空");
+			return;
+		}
+		else if(newName.length>30){
+			alert("名字字數不得大於30");
+			return;
+		}
+		
+		let isUsed = await contract.isUsedName(newName);
+		if(isUsed){
+			alert("此名字已被使用！");
+			return;
+		}
+		
+		let tx = await contractWithSigner.setWriterName(newName);
+		await tx.wait();
+		updateBalance();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function onPostBtn(){
+	try{
+		let articleStr=document.querySelector('#inputText').value;
+		if(articleStr.length<=0){
+			alert("文章不得為空");
+			return;
+		}
+		else if(articleStr.length>1000){
+			alert("文字數不得大於1000");
+			return;
+		}
+		
+		let tx = await contractWithSigner.addArticle(articleStr);
+		await tx.wait();
+		updateBalance();
+		initArticle();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function updateBalance(){
+	try{
+		let balanceNum=await provider.getBalance(address);
+		document.querySelector('#showBalance').value=ethers.utils.formatEther(balanceNum);
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+</script>
+</html>
