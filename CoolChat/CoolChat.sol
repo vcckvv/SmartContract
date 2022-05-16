@@ -12,11 +12,11 @@ contract CoolChat {
 	string[] articleArray;
 
 
-    constructor() {
-        founderAddr = msg.sender;
-    }
+	constructor() {
+		founderAddr = msg.sender;
+	}
 
-    function getArticleCount() public view returns (uint256 index) {
+	function getArticleCount() public view returns (uint256 index) {
 		return articleArray.length;
 	}
 
