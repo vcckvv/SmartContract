@@ -83,6 +83,10 @@ let tables=document.getElementsByName("table");
 let writers=document.getElementsByName("writer");
 let articleAreas=document.getElementsByName("article");
 
+for(let i=0; i<pageSize ; i++){
+	tables[i].style.display="none";
+}
+	
 //https://rinkeby.etherscan.io/address/0x87Daeb0B937A53926335f4173B7Af38711BB8d25#readContract
 
 // The Contract interface
@@ -150,13 +154,15 @@ async function showArticles(pageNum){
 		return;
 	}
 	
+	for(let i=0; i<pageSize ; i++){
+		tables[i].style.display="none";
+		articleAreas[i].style.height=140;//復原被拉掉的大小
+	}
+	
 	nowPage=pageNum;
 	let getCount=pageSize;
 	if(pageNum==pageCount-1){
 		if(articleCount==0){
-			for(let i=0; i<pageSize ; i++){
-				tables[i].style.display="none";
-			}
 			document.querySelector('#pageList').innerHTML="";
 			return;
 		}
@@ -164,11 +170,6 @@ async function showArticles(pageNum){
 		getCount=articleCount%pageSize;
 		if(getCount==0){
 			getCount=pageSize;
-		}
-		else{
-			for(i=getCount; i<pageSize ; i++){
-				tables[i].style.display="none";
-			}
 		}
 	}
 	
@@ -194,7 +195,7 @@ async function showArticles(pageNum){
 			name=name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		}
 		
-		tables[i].style.display="initial";
+		tables[i].style.display="";
 		writers[i].innerHTML=articleIndex+ "　"+ data[0][index]+ "<br>("+ name+ ")";
 		articleAreas[i].value=data[2][index];
 	}
