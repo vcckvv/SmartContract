@@ -192,7 +192,7 @@ async function showArticles(pageNum){
 			name="無名";
 		}
 		else{
-			name=name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			name=name.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;");
 		}
 		
 		tables[i].style.display="";
