@@ -9,6 +9,7 @@ contract CoolChat {
 	
 	address[] writerArray;
 	string[] writerNameArray;
+	uint256[] timeArray;
 	string[] articleArray;
 
 
@@ -20,36 +21,39 @@ contract CoolChat {
 		return articleArray.length;
 	}
 
-	function getArticle(uint256 index) public view returns (address, string memory, string memory) {
+	function getArticle(uint256 index) public view returns (address, string memory, uint256, string memory) {
 		require(index<articleArray.length);
 	
-		return (writerArray[index], writerNameArray[index], articleArray[index]);
+		return (writerArray[index], writerNameArray[index], timeArray[index], articleArray[index]);
 	}
 
-	function getArticle(uint256 index, uint256 count) public view returns (address[] memory, string[] memory, string[] memory) {
+	function getArticles(uint256 index, uint256 count) public view returns (address[] memory, string[] memory, uint256[] memory, string[] memory) {
 		require(count>=1);
 		require(index+count-1<articleArray.length);
 		
 		address[] memory outWriterArray=new address[](count);
 		string[] memory outWriterNameArray=new string[](count);
+		uint256[] memory outTimeArray=new uint256[](count);
 		string[] memory outArticleArray=new string[](count);
 		
 		
 		for(uint i=0; i<count; i++){
 			outWriterArray[i]=writerArray[index+i];
 			outWriterNameArray[i]=writerNameArray[index+i];
+			outTimeArray[i]=timeArray[index+i];
 			outArticleArray[i]=articleArray[index+i];
 		}
 
-		return (outWriterArray, outWriterNameArray, outArticleArray);
+		return (outWriterArray, outWriterNameArray, outTimeArray, outArticleArray);
 	}
 
 	function addArticle(string memory str) public {
 		require(bytes(str).length>0 && bytes(str).length<=3000);//utf8中文字最多1000字
 		
-		articleArray.push(str);
 		writerArray.push(msg.sender);
 		writerNameArray.push(addrNameMap[msg.sender]);
+		timeArray.push(block.timestamp);
+		articleArray.push(str);
 	}
 	
 	function testMassArticle(uint256 num) public {
@@ -59,9 +63,10 @@ contract CoolChat {
 		string[4] memory strArray=["0", "1", "2", "3"];
 		
 		for(uint i=0; i<num; i++){
-			articleArray.push(strArray[i%4]);
 			writerArray.push(msg.sender);
 			writerNameArray.push(name);
+			timeArray.push(block.timestamp);
+			articleArray.push(strArray[i%4]);
 		}
 	}
 	
