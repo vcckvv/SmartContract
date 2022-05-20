@@ -195,13 +195,13 @@ async function showArticles(pageNum){
 			name=name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		}
 		
-    	let time = new Date(data[2][index] * 1000);
-    	let year = time.getFullYear();
-    	let month = time.getMonth()+1;
-    	let date = time.getDate();
-    	let hour = time.getHours();
-    	let min = time.getMinutes();
-    	let sec = time.getSeconds();
+		let time = new Date(data[2][index] * 1000);
+		let year = time.getFullYear();
+		let month = time.getMonth()+1;
+		let date = time.getDate();
+		let hour = time.getHours();
+		let min = time.getMinutes();
+		let sec = time.getSeconds();
 		
 		tables[i].style.display="";
 		writers[i].innerHTML=articleIndex+ "　"+ data[0][index]+ "<br>("+ name+ ") "+ year + "年" + month + "月" + date + "日" + hour + "時" + min + "分" + sec + "秒";
