@@ -87,11 +87,11 @@ for(let i=0; i<pageSize ; i++){
 	tables[i].style.display="none";
 }
 	
-//https://rinkeby.etherscan.io/address/0x87Daeb0B937A53926335f4173B7Af38711BB8d25#readContract
+//https://rinkeby.etherscan.io/address/0x16dDAD64b5e67b5BA23E69761Aa92EA78ABfF917
 
 // The Contract interface
-const abi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"string","name":"str","type":"string"}],"name":"addArticle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getArticle","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getArticleCount","outputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"getArticles","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"addr","type":"address"}],"name":"getWriterName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"name","type":"string"}],"name":"isUsedName","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"name","type":"string"}],"name":"setWriterName","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"num","type":"uint256"}],"name":"testMassArticle","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-const contractAddress = "0x87Daeb0B937A53926335f4173B7Af38711BB8d25";
+const abi = [{"inputs": [],"stateMutability": "nonpayable","type": "constructor"},{"inputs": [{"internalType": "string","name": "str","type": "string"}],"name": "addArticle","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "uint256","name": "index","type": "uint256"}],"name": "getArticle","outputs": [{"internalType": "address","name": "","type": "address"},{"internalType": "string","name": "","type": "string"},{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "getArticleCount","outputs": [{"internalType": "uint256","name": "index","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "uint256","name": "index","type": "uint256"},{"internalType": "uint256","name": "count","type": "uint256"}],"name": "getArticles","outputs": [{"internalType": "address[]","name": "","type": "address[]"},{"internalType": "string[]","name": "","type": "string[]"},{"internalType": "uint256[]","name": "","type": "uint256[]"},{"internalType": "string[]","name": "","type": "string[]"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "addr","type": "address"}],"name": "getWriterName","outputs": [{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "string","name": "name","type": "string"}],"name": "isUsedName","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "string","name": "name","type": "string"}],"name": "setWriterName","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "uint256","name": "num","type": "uint256"}],"name": "testMassArticle","outputs": [],"stateMutability": "nonpayable","type": "function"}];
+const contractAddress = "0x16dDAD64b5e67b5BA23E69761Aa92EA78ABfF917";
 
 let address = null;
 let provider = null;
@@ -195,9 +195,17 @@ async function showArticles(pageNum){
 			name=name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		}
 		
+    	let time = new Date(data[2][index] * 1000);
+    	let year = time.getFullYear();
+    	let month = time.getMonth()+1;
+    	let date = time.getDate();
+    	let hour = time.getHours();
+    	let min = time.getMinutes();
+    	let sec = time.getSeconds();
+		
 		tables[i].style.display="";
-		writers[i].innerHTML=articleIndex+ "　"+ data[0][index]+ "<br>("+ name+ ")";
-		articleAreas[i].value=data[2][index];
+		writers[i].innerHTML=articleIndex+ "　"+ data[0][index]+ "<br>("+ name+ ") "+ year + "年" + month + "月" + date + "日" + hour + "時" + min + "分" + sec + "秒";
+		articleAreas[i].value=data[3][index];
 	}
 	
 	const nearNum=3;
