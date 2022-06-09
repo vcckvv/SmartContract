@@ -78,7 +78,7 @@ async function onAddTokenBtn(){
 async function onGetTokenBtn(){
 	try{
 		let tx = await contractWithSigner.mint();
-		alert("https://rinkeby.etherscan.io/tx/" + tx.hash);
+		alert("https://goerli.etherscan.io/tx/" + tx.hash);
 	}catch(err){
 		if(err.code==4001){//reject
 			alert("User rejected tx.");
