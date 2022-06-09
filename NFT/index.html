@@ -1,1 +1,82 @@
-NFT
+<html>
+<head> 
+	<title>NFT</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<input id="showAddress" readonly  size="50" /><input id="showBalance" readonly /><br>
+	<button onclick="onGetNFT(1)">獲得NFT 1</button><br>
+	<button onclick="onGetNFT(2)">獲得NFT 2</button><br>
+	<button onclick="onGetNFT(3)">獲得NFT 3</button><br>
+	<button onclick="onGetNFT(4)">獲得NFT 4</button><br>
+	<a href="https://mumbaifaucet.com/"  target="_blank">mumbai水龍頭網站</a>
+</body>
+
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script>
+
+// The Contract interface
+const abi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"uri","type":"string"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const contractAddress = "0x8abB77ff22F8966729603BD49c5c049C4294EFd5";
+
+let address = null;
+let provider = null;
+let contract = null;
+let contractWithSigner = null;
+
+async function init(){
+	try{
+		let response = await window.ethereum.request({method: 'eth_requestAccounts'});
+		address = response[0];
+		document.querySelector('#showAddress').value=address;
+		
+		//切換到mumbai測試鏈
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x13881' }],});
+		
+		provider = new ethers.providers.Web3Provider(window.ethereum);
+		
+		let balanceNum=await provider.getBalance(address);
+		document.querySelector('#showBalance').value=ethers.utils.formatEther(balanceNum);
+		
+		contract = new ethers.Contract(contractAddress, abi, provider);
+		contractWithSigner = contract.connect(provider.getSigner() );
+		
+	}catch(err){
+		alert(err.message);
+	}
+}
+init();
+
+window.ethereum.on('accountsChanged', function (accounts) {
+	init();
+});
+
+window.ethereum.on('chainChanged', async function(networkId){
+	if(networkId!=0x13881){
+		alert("this only works on mumbai");
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x13881' }],});
+	}
+});
+
+async function onGetNFT(num){
+	try{
+		let uriAr[4]={
+			"ipfs://QmUtb97bLLNPYTYPzCPxuLhu3q4kRcMzhtrW7W5xJVgr9B",
+			"https://ipfs.io/ipfs/QmUtb97bLLNPYTYPzCPxuLhu3q4kRcMzhtrW7W5xJVgr9B",
+			"data:application/json;base64,eyJuYW1lIjoicmFCaXQiLCJkZXNjcmlwdGlvbiI6InJhQml0IiwiaW1hZ2UiOiJodHRwczovL2lwZnMuaW8vaXBmcy9RbVJUaFBQQjFQRXNTNnRTS2RRWDRwMlVEbThNMUVWeERIckJ2dVR4OWRudkZlIn0=",
+			"data:application/json;base64,eyJuYW1lIjoiaWNvbiIsImRlc2NyaXB0aW9uIjoiaWNvbiIsImltYWdlIjoiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFDZ0FBQUFvQ0FJQUFBQURuQzg2QUFBR3IwbEVRVlJZaGNXWWYzQlVWeFhIditmZTkvWlhOcHNmbXcwa0lWZ0lBWnFHMGdKU3RZMVd3SlpXclMyMmRPSkluYWwyT25XMFA5VFJEdTNvWUlkT2h4bFI2NHdqVXNmUkdhYlNPaTIyV29RSkZFUVVXeUFwTmlHUU5CUENralUvTm1HelNmYkhlKzhlLzNoaDgzYXorUUg5Zy9QUDIzZnZ1ZWR6enA1ejd6dnZFVFBqZW9pNEx0VHJDZGF1YVJXREdheGdwMGxJMEZVSGNCVmd4YXFqczdXOWFWZFo5TlQ4WkhjNTl3TVlKZitnWHRrYlhIdkQzZCt2WFZJdjV1d0J6VjVjek1sMDhyVTlQM3ZnbzUvTWF1N05tbTJidi81RGo4djFjY0VxRlQremZYT05kWEJXUXdBQkU2WU9OYng2MzkwUHpoejlUR0JsR2RGSFM3MWw0K3dCQUFnNWtkcXBWZ29yWk1WS2prZXN2bFlvRThDN25pOTg2ZmwzWm1CUEM0NE45TWtuS25uWnhLMG9XYVRWZnhWbXlqaXpsOGY2Si9XRTFHOSsySDN2VHZJVWNleGlZdS9YclBCSmU2YVhLaXFlYlF2NEExY0JWcXppajN0RXlKcFFjZ2U4alh2bGtnMGdvUWJheDNjMWNHTElucElMUCtWNzdDakVSSkVhcDM2ZmZPTmJHVHNSV1ZxN3JZL3l4WjFuU0xHS1BGV2VvUUlRd1NWeThaMzJuaEdoNWQ3R1AwSG90a3V1enp5Wm9RTFFGbjNXdWJVcXJLRWpQMi9nZk5uSkEyN1pmbCtnY05nNVF1N0NLeVFBa0RYclpQVmFBQ0JRMGNKc2V4cEF6b0UxMFJNbjJvN05EazZjYTZwTjdNOFE3WXVLUjJDbG5KN0lHKzRBQUdhcnM4bTUzTHJ3VHlBcnZyQUkvUEx0bDAyVkczUXV1T2NQendBZ3Fjc0ZuOVJ2YVpUelY1RFFPQlkyengrWVZGSVd4OEwyei9SN3U1Q09YOEdtVTBkZUFqTkpYWlF0bFZXcnlWdnNnN2s3dnE5ajk4WWNVTmJKWmZaOVdFbHRKRFI5N2VQdURUK0YyODlqMGRSYjN6YmI5cVgrL2lQeUZNbnF0V0JsdHYvVjZyaXlzeE5ENXZtRDJ2SXZBa2ovWTRjYU9Fc2t0QldiWFhkdUpjMWpudDhmUExDVlUxalFjOGpxYjVYbE4rVUhYenA5dUJTZzRtclhIYy9BVXdTQS9PV3VEZHZNemlZVjdVaTgrcEFJM1FoV3FyK05rN0VyVVJyR3lkMHdFeW9lU1ovNE5aZ3BVT20rNjBVcVdnQkFYL09vMlhIUVBQc1dnS0dlMDZIcHdBUEg5cFVTU0MrQTVzME1raThJNlFMQTQwTld6NytRdmYyWWxkVjFSRVUrWUNQQnFUZ0FFYXloUU1YRXRIUnJpejl2dGIvTnpCOTFIQSt0MlpKWm1KWGpvdEV1QU9yeUJhdXpDV3dCQUZ0VzV5Rms0bU1HaUtTTFBFVVVxSkxsTjRyaWhTQlNvLzAyMVhiVldkaHNqRTE0T25EV3ljcUt1RVFNQU9CVVBQbTNwL1ZJczF6ME9SWDVJUDN2WDdFeUFaQ1FWRmloMWQydjNiUkpGSDhDbWdkczhmaWdlZTRkNDczZmNpeHM3MWRPRENFVnR6TUZNMkcydm1uL1NjR3hpMDdXNU1tVmZuZDdxdW5IV1hNazJINzBBdVR5dTlZOXI2LzZCdm1DSU9sVUF5dE9ERnRkaDQzVGY3UzZqN0dRN28wNzlHWDNBR1Q4NXpmcG95OU4rSzE1ZkUrMmlHRHRsSWhGN3RiS25EaWtlejFmZmxtN2RVditCejRKOGdXMStvZTB1Z2RVNzZteEE4OFpoMSt3V3QvZ1pFeEZXbXlxSFFjNVVwQjFWa2VmOXJrS1VybG1TV2dyR3oyYlhyRkxiQlpoeTdwd1BQbmFJendTWnNCWmlmOHJYRno3Yk1ka21NNVZRNm84VHp5RjgxMjNQelVuS2dBU3BIbWdlNWc1cC82SC9OWE8yeXh3ekw5NHFpbFJYaWRLOG96bkY2VlVQTUlqa1N4bkFBQmN0c3c1bUFVT05kdy8xUlQ1Z3BCemJzMEk1QzBCT1hJSkVKaUFwWFVicGdWWHJWcVg1VDFMQUd3a2tDbVFPYkZGcGdadEtnQUlXVks3Zmxxd05xKytsK3N5dDVZTmprYzRQWjYzNDhranJOVGdlUmdKY2xLQmtSVmJ5RnM4TFJoQTlZTmJIYjREQU1kNjFIQTNsSkhwNVdiaUppNmIvLzB6VzJrNHFPVHlWV3g4SVVjekYreGIxZGp2dnkwTFBCWTFXL1p3Y2dTV09XUGNqUFNZY2ZJVnEvdW9NMVlRNmZmc3BFQmxqbmFlbmt1eDZubWlLaGpzVDhIalJoSUF1ZjJ1MjcrbnIzcUVDa0tRYnNqc05vTVZ6SVM2Zk5GNGY3ZHg4bmRJalRoYkVMbXkwYk41ejFRM3AyMzJtaDlic1hSZSs2U2U3aFdWdDJvMTYyWDFiU0pZQzNjaHJEU1A5SnFYTDJMd25IWHBmWFhwTkkvMlFSbFpqVTlnUWNFUE92T2VBZE8ydC9HMGNXajd2ZXZOdzFuYUpLQjd5RCtQQ2l1UUdsWERYV3draVpWOXVOcmJadEo3NlM3NGJyTUlMYzlyZjhhR1BoMC92blA5emZFV0FXczZuVWxEenJ3Q1VYZFoxVGYzeTZyVjArblA5SlloOUlKUFA3d2pGYXcxU2ViMGpqTkw3K3J2VkQ4WG5vR0syVi9hbU5Wd2QvckQxM3ViWHpjR3UwbzQ2ZWEwUVA3YUptQWdkRXZWVjM3aFd0UXdxM056ZUZzRXdJcFRJeXJhT1J4dWpwejVTL0RTQ1o4WlZ5d01na1lrQ0FKTUJTRlgvU2IzWFMrUzdwdmQ0RnpCVHJIU0toWldBMmQ1ZkJoRXBIdkpIWUN2VlBqblVVRm9yZyt4YXdGUGlyM3dLbkx2bEd2N0ZJR1BnN1RsdW4xOCtUK09KL05xbC9VbWlRQUFBQUJKUlU1RXJrSmdnZz09In0="
+		};
+		
+		let tx = await contractWithSigner.mint(uriAr[num]);
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+</script>
+</html>
