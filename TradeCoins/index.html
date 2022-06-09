@@ -1,1 +1,1486 @@
-TradeCoin
+<html>
+<head> 
+	<title>TradeCoins</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<table>
+		<tr align="left"><td>Account：<input id="showAddress" size="42" readonly /></td></tr>
+		<tr align="left"><td>Balance：<input id="showBalance" size="42" readonly /></td></tr>
+	</table>
+	<hr>
+	<div align="center">Trading Pair：
+		<select id="tradePair" onchange="onSelTradePair()">
+			<option value="0">ETH-TEST</option>
+			<option value="1">USD-ETH</option>
+			<option value="2">USD-TEST</option>
+		</select>
+	</div>
+	<hr>
+	<div class="tab">
+		<button id="tradeCoinsTab" class="tabSel" onclick="onTradeCoinsBtn()">TradeCoins</button>
+		<button id="userTab" onclick="onUserBtn()">User</button>
+		<button id="ordersTab" onclick="onOrdersBtn()">Orders</button>
+		<button id="logTab" onclick="onLogBtn()">Log</button>
+		<button id="faucetTab" onclick="onFaucetBtn()">Faucet</button>
+	</div>
+	<div class="blankBlock"></div>
+	
+	<div id="tradeCoins">
+		<div class="block">
+			<table>
+				<tr><td align="center"><span name="token2">TEST</span> Price(<span name="token1">ETH</span>)</td><td align="center">Amount(<span name="token1">ETH</span>)</td></tr>
+				<tr><td name="sellPrice" class="sell">-</td><td name="sellAmount" class="sell">-</td></tr>
+				<tr><td name="sellPrice" class="sell">-</td><td name="sellAmount" class="sell">-</td></tr>
+				<tr><td name="sellPrice" class="sell">-</td><td name="sellAmount" class="sell">-</td></tr>
+				<tr><td name="sellPrice" class="sell">-</td><td name="sellAmount" class="sell">-</td></tr>
+				<tr><td name="sellPrice" class="sell">-</td><td name="sellAmount" class="sell">-</td></tr>
+				<tr><td name="sellPrice" class="sell">-</td><td name="sellAmount" class="sell">-</td></tr>
+				<tr><td name="sellPrice" class="sell">-</td><td name="sellAmount" class="sell">-</td></tr>
+				
+				<tr><td id="price" class="price">-</td></tr>
+				
+				<tr><td name="buyPrice" class="buy">-</td><td name="buyAmount" class="buy">-</td></tr>
+				<tr><td name="buyPrice" class="buy">-</td><td name="buyAmount" class="buy">-</td></tr>
+				<tr><td name="buyPrice" class="buy">-</td><td name="buyAmount" class="buy">-</td></tr>
+				<tr><td name="buyPrice" class="buy">-</td><td name="buyAmount" class="buy">-</td></tr>
+				<tr><td name="buyPrice" class="buy">-</td><td name="buyAmount" class="buy">-</td></tr>
+				<tr><td name="buyPrice" class="buy">-</td><td name="buyAmount" class="buy">-</td></tr>
+				<tr><td name="buyPrice" class="buy">-</td><td name="buyAmount" class="buy">-</td></tr>
+			</table><br>
+		</div>
+		<div class="block">
+			<table>
+				<tr><td class="trade">Buy</td><td class="trade">Sell</td></tr>
+				<tr>
+					<td class="trade">
+						<input type="radio" id="buyMarketType" value="buyMarketType" name="buyType"><label for="buyMarketType">Market Order</label>
+						<input type="radio" id="buyLimitType" value="buyLimitType" name="buyType" checked><label for="buyLimitType">Limit Order</label><br>
+	            	</td>
+	            	<td class="trade">
+						<input type="radio" id="sellMarketType"  value="sellMarketType" name="sellType"><label for="sellMarketType">Market Order</label>
+						<input type="radio" id="sellLimitType" value="sellLimitType" name="sellType" checked><label for="sellLimitType">Limit Order</label><br>
+	            	</td>
+	            </tr>
+	            <tr>
+					<td class="trade">
+						1 <span name="token2">TEST</span> Max Price(<span name="token1">ETH</span>)<br>
+						<input id="buyPrice" size="20" onkeyup="onBuyPriceInput()"></input>
+	            	</td>
+					<td class="trade">
+						1 <span name="token2">TEST</span> Min Price(<span name="token1">ETH</span>)<br>
+						<input id="sellPrice" size="20" onkeyup="onSellPriceInput()"></input>
+	            	</td>
+	            </tr>
+	            <tr>
+					<td class="trade">
+						Own Amount(<span name="token1">ETH</span>)<br>
+						<input id="ownAmount1" size="20" readonly></input>
+	            	</td>
+					<td class="trade">
+						Own Amount(<span name="token2">TEST</span>)<br>
+						<input id="ownAmount2" size="20" readonly></input>
+	            	</td>
+	            </tr>
+	            <tr>
+					<td class="trade">
+						Give Amount(<span name="token1">ETH</span>)<br>
+						<input id="buyAmount" size="20" onkeyup="onBuyAmountInput()"></input>
+	            	</td>
+					<td class="trade">
+						Give Amount(<span name="token2">TEST</span>)<br>
+						<input id="sellAmount" size="20" onkeyup="onSellAmountInput()"></input>
+	            	</td>
+	            </tr>
+	            <tr>
+					<td class="trade">
+						Get Amount(<span name="token2">TEST</span>)<br>
+						<input id="buyGetAmount" size="20" onkeyup="onBuyGetAmountInput()"></input>
+	            	</td>
+					<td class="trade">
+						Get Amount(<span name="token1">ETH</span>)<br>
+						<input id="sellGetAmount" size="20" onkeyup="onSellGetAmountInput()"></input>
+	            	</td>
+	            </tr>
+	            <tr>
+					<td class="trade">
+						<button id="buyButton" class="buy" onclick="onBuyBtn()">Buy</button>
+	            	</td>
+					<td class="trade">
+						<button id="sellButton" class="sell" onclick="onSellBtn()">Sell</button>
+	            	</td>
+	            </tr>
+			</table>
+		</div>
+	</div>
+	<div id="user" style="display: none">
+		<div class="dataBlock"><p>
+			user: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+			type: <span class="sell">sell</span><br>
+			pairID: 0 (ETH-TEST)<br>
+			price: 100 (1.00 TEST/ETH)<br>
+			value: 100 (1.00 ETH)<br>
+			orderID: 1<br><br>
+			<button>Delete Order</button>
+		</p></div>
+		<div class="blankBlock"></div>
+		<div class="dataBlock"><p>
+			user: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+			type: <span class="buy">buy</span><br>
+			pairID: 0 (ETH-TEST)<br>
+			price: 100 (1.00 TEST/ETH)<br>
+			value: 100 (1.00 ETH)<br>
+			orderID: 1<br><br>
+			<button>Delete Order</button>
+		</p></div>
+	</div>
+	<div id="orders" style="display: none">
+		<div class="dataBlock"><p>
+			user: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+			type: <span class="sell">sell</span><br>
+			pairID: 0 (ETH-TEST)<br>
+			price: 100 (1.00 TEST/ETH)<br>
+			value: 100 (1.00 ETH)<br>
+			orderID: 1<br>
+		</p></div>
+		<div class="blankBlock"></div>
+		<div class="dataBlock"><p>
+			user: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+			type: <span class="buy">buy</span><br>
+			pairID: 0 (ETH-TEST)<br>
+			price: 100 (1.00 TEST/ETH)<br>
+			value: 100 (1.00 ETH)<br>
+			orderID: 1<br>
+		</p></div>
+	</div>
+	<div id="log" style="display: none">
+		<div class="block">
+			<table>
+				<tr align="left"><td>Start Block：</td><td><input id="startBlock" size="20" onkeyup="showStartBlockTime()" /> (<span id="startBlockTime">2022/01/01-01:01:01</span>)</td></tr>
+				<tr align="left"><td>End Block：</td><td><input id="endBlock" size="20" onkeyup="showEndBlockTime()" /> (<span id="endBlockTime">2022/01/01-01:01:01</span>)</td></tr>
+			</table><br>
+			<div align="center" ><button onClick="showLog()">Search Log</button></div><br>
+		</div>
+		<div id="showLog">
+			<div class="blankBlock"></div>
+			<div class="dataBlock"><p>
+				Time: 2022/01/01-01:01:01<br>
+				Type: TradeOrder<br>
+				buyUser: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+				sellUser: 0x0000000000000000000000000000000000000000<br>
+				pairID: 0 (ETH-TEST)<br>
+				price: 100 (1.00 TEST/ETH)<br>
+				buyValue: 100 (1.00 ETH)<br>
+				sellValue: 0 (0 TEST)<br>
+				orderID: 1<br>
+				isEndOrder: false<br>
+			</p></div>
+			<div class="blankBlock"></div>
+			<div class="dataBlock"><p>
+				Time: 2022/01/01-01:01:01<br>
+				Type: TradeOrder<br>
+				buyUser: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+				sellUser: 0x0000000000000000000000000000000000000000<br>
+				pairID: 0 (ETH-TEST)<br>
+				price: 100 (1.00 TEST/ETH)<br>
+				buyValue: 100 (1.00 ETH)<br>
+				sellValue: 0 (0 TEST)<br>
+				orderID: 1<br>
+				isEndOrder: false<br>
+			</p></div>
+		</div>
+	</div>
+	<div id="faucet" style="display: none">
+		<div class="dataBlock"><p>
+			Goerli Faucet：<a href="https://faucets.chain.link/goerli"  target="_blank">https://faucets.chain.link/goerli</a>
+			<hr class="dataBlock">
+			TEST Token：<button onclick="onAddTestBtn()">Add TEST Asset</button> <button onclick="onGetTestBtn()">Get TEST</button><br><br>
+			Allowance：<input id="testAllow" size="30" readonly /> <button onclick="onMaxAllowTestBtn()">Max TEST Allowance</button><br>
+			<hr class="dataBlock">
+			USD Token：<button onclick="onAddUsdBtn()">Add USD Asset</button> <button onclick="onGetUsdBtn()">Get USD</button><br><br>
+			Allowance：<input id="usdAllow" size="30" readonly /> <button onclick="onMaxAllowUsdBtn()">Max USD Allowance</button><br>
+		</p></div>
+	</div>
+</body>
+
+<style>
+
+body{
+	margin-left: auto;
+	margin-right: auto;
+	
+	color: #D1D5DB;
+	background-color: #1F2937;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 20px;
+}
+
+table{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+input, select{
+	color: #D1D5DB;
+	background-color: #374151;
+	border: 1px solid #ccc;
+	font-size: 20px;
+}
+
+input.bad{
+	color: #C63E50;
+}
+
+button{
+	color: #FAFAFB; 
+	background-color: #6B7280;
+	cursor: pointer;
+	border-radius: 5px;
+	font-size: 20px;
+}
+
+button:hover{
+	color: #FAFAFB;
+	background-color: #4B5563;
+}
+
+a{
+	color: #60A5FA;
+}
+
+hr {
+    width: 800px;
+}
+
+hr.dataBlock {
+    width: auto;
+}
+
+div.block{
+	width: 800px;
+	margin: auto;
+	
+	color: #D1D5DB;
+	background-color: #374151;
+	font-family: Arial, Helvetica, sans-serif;
+	
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+div.blankBlock{
+	width: 800px;
+	height: 10px;
+	margin: auto;
+}
+
+div.dataBlock{
+	width: 760px;
+	margin: auto;
+	padding-left: 20px;
+	padding-right: 20px;
+	
+	color: #D1D5DB;
+	background-color: #374151;
+	font-family: Arial, Helvetica, sans-serif;
+	
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+div.trade , td.trade{
+	width: 380px;
+	margin: auto;
+	padding: 5px;
+	text-align: center;
+	
+	border: 1px solid #1F2937;
+	
+	color: #D1D5DB;
+	background-color: #374151;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+td.sell{
+	text-align: center;
+	width: 300px;
+	color: #F6465D;
+	background-color: #1F2937;
+	padding: 3px;
+}
+
+td.buy{
+	text-align: center;
+	width: 300px;
+	color: #0ECB81;
+	background-color: #1F2937;
+	padding: 3px;
+}
+
+td.price{
+	text-align: center;
+	color: #D1D5DB;
+	background-color: #374151;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+button.buy{
+	width: 300px;
+	height: 50px;
+	color: white;
+	background-color: #04AA6D;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+button.buy:hover {
+	background-color: #059862;
+}
+
+button.buy:active {
+  background-color: #6B7280;
+}
+
+button.sell{
+	width: 300px;
+	height: 50px;
+	color: white;
+	background-color: #F6465D;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+button.sell:hover {
+	background-color: #C63E50;
+}
+
+button.sell:active {
+  background-color: #6B7280;
+}
+
+span.sell{
+	color: #F6465D;
+}
+
+span.buy{
+	color: #0ECB81;
+}
+
+.tab {
+	width: 800px;
+	margin: auto;
+	overflow: hidden;
+	border: 1px solid #ccc;
+	
+	color: #D1D5DB;
+	background-color: #374151;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.tab button {
+	background-color: inherit;
+	float: left;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+}
+
+.tab button:hover {
+	background-color: #6B7280;
+}
+
+.tab button.tabSel{
+	background-color: #6B7280;
+}
+
+</style>
+
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script>
+
+const testABI = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"mint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"INITIAL_SUPPLY","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"}];
+const testAddr = "0x63E1ddeB828eD1634B3165f56e2F31950b4d0B93";
+const testDeci=2;
+
+const usdABI = [{"constant": true,"inputs": [],"name": "name","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "value","type": "uint256"}],"name": "approve","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [],"name": "mint","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "totalSupply","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "from","type": "address"},{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transferFrom","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [],"name": "INITIAL_SUPPLY","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "","type": "uint8"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "addedValue","type": "uint256"}],"name": "increaseAllowance","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"}],"name": "balanceOf","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": true,"inputs": [],"name": "symbol","outputs": [{"name": "","type": "string"}],"payable": false,"stateMutability": "view","type": "function"},{"constant": false,"inputs": [{"name": "spender","type": "address"},{"name": "subtractedValue","type": "uint256"}],"name": "decreaseAllowance","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": false,"inputs": [{"name": "to","type": "address"},{"name": "value","type": "uint256"}],"name": "transfer","outputs": [{"name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"},{"constant": true,"inputs": [{"name": "owner","type": "address"},{"name": "spender","type": "address"}],"name": "allowance","outputs": [{"name": "","type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},{"inputs": [],"payable": false,"stateMutability": "nonpayable","type": "constructor"},{"anonymous": false,"inputs": [{"indexed": true,"name": "from","type": "address"},{"indexed": true,"name": "to","type": "address"},{"indexed": false,"name": "value","type": "uint256"}],"name": "Transfer","type": "event"},{"anonymous": false,"inputs": [{"indexed": true,"name": "owner","type": "address"},{"indexed": true,"name": "spender","type": "address"},{"indexed": false,"name": "value","type": "uint256"}],"name": "Approval","type": "event"}];
+const usdAddr = "0xcF364fb0cDBe5D8D4300B8030892E3e09e71D57B";
+const usdDeci=18;
+
+const tradeABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"time","type":"uint256"},{"indexed":false,"internalType":"enum TradeType","name":"tradeType","type":"uint8"},{"indexed":true,"internalType":"address","name":"buyUser","type":"address"},{"indexed":true,"internalType":"address","name":"sellUser","type":"address"},{"indexed":true,"internalType":"uint32","name":"pairID","type":"uint32"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"buyValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"sellValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":false,"internalType":"bool","name":"isEndOrder","type":"bool"}],"name":"Trade","type":"event"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"isOrder","type":"bool"}],"name":"buy","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cnOrgCoin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"cnPriceStd","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddr","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"decBalance","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"subValue","type":"uint256"}],"name":"decOrderValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"subValue","type":"uint256"}],"name":"decPriceAmount","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"orderID","type":"uint256"}],"name":"delOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"isSell","type":"bool"}],"internalType":"struct Order","name":"order","type":"tuple"}],"name":"endOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"}],"name":"getLastPrice","outputs":[{"internalType":"uint256","name":"lastPrice","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"getOrder","outputs":[{"components":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"isSell","type":"bool"}],"internalType":"struct Order","name":"order","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"maxCount","type":"uint256"}],"name":"getOrders","outputs":[{"components":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"isSell","type":"bool"},{"internalType":"uint256","name":"orderID","type":"uint256"}],"internalType":"struct OrderData[]","name":"buyOrderAr","type":"tuple[]"},{"internalType":"uint256","name":"buyCount","type":"uint256"},{"components":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"isSell","type":"bool"},{"internalType":"uint256","name":"orderID","type":"uint256"}],"internalType":"struct OrderData[]","name":"sellOrderAr","type":"tuple[]"},{"internalType":"uint256","name":"sellCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getOtherBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"maxCount","type":"uint256"}],"name":"getState","outputs":[{"internalType":"uint256","name":"_lastPrice","type":"uint256"},{"internalType":"uint256[]","name":"buyPriceAr","type":"uint256[]"},{"internalType":"uint256[]","name":"buyAmountAr","type":"uint256[]"},{"internalType":"uint256","name":"buyCount","type":"uint256"},{"internalType":"uint256[]","name":"sellPriceAr","type":"uint256[]"},{"internalType":"uint256[]","name":"sellAmountAr","type":"uint256[]"},{"internalType":"uint256","name":"sellCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddr","type":"address"}],"name":"getTokenBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddr","type":"address"}],"name":"getTokenOtherBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"}],"name":"getTokenPair","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTokenPairs","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"addr","type":"address"},{"internalType":"uint32","name":"pairID","type":"uint32"}],"name":"getUserOrder","outputs":[{"components":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"isSell","type":"bool"},{"internalType":"uint256","name":"orderID","type":"uint256"}],"internalType":"struct OrderData[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"isOrder","type":"bool"}],"name":"sell","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"uint256","name":"price","type":"uint256"}],"name":"setLastPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"pairID","type":"uint32"},{"internalType":"address","name":"tokenAddr1","type":"address"},{"internalType":"address","name":"tokenAddr2","type":"address"}],"name":"setTokenPair","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"num","type":"uint32"}],"name":"setTokenPairNum","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"value","type":"uint256"}],"name":"withdrawOther","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddr","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"withdrawTokenOther","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const tradeAddr = "0x3ad662f1ea059B36e884255DcE82cEB155529E5A";
+const priceDeci=18;
+const showPriceDeci=18;
+/*
+OrderTreeLib : 
+0x57c2cef4671198e7a48b1b816e2a1cfc7fd5b242
+
+PriceTreeLib : 
+0x895f4854784f57ba379dca0af1ca8673386299e0
+
+TradeCoinsLib : 
+0x84000dd58035b19ba5fd8558b34b8fbf1a6a7a1c
+*/
+
+const orgAddr=tradeAddr;//原生代幣設定成和合約同位址
+const orgDeci=18;
+
+let pairAr=[["ETH-TEST", "ETH", "TEST", orgDeci, testDeci], ["USD-ETH", "USD", "ETH", usdDeci, orgDeci], ["USD-TEST", "USD", "TEST", usdDeci, testDeci] ];
+
+let showPage="tradeCoins";
+let nowPairID=0;
+let nowPairIDStr="";
+
+let token1="";
+let token2="";
+let token1Deci=1;
+let token2Deci=1;
+let nowPriceShf=0;
+
+let token1Addr="";
+let token2Addr="";
+let token1Contract=null;
+let token1ContractSigner=null;
+let token2Contract=null;
+let token2ContractSigner=null;
+
+let utils=ethers.utils;
+
+let userAddr = null;
+let provider = null;
+
+let testContract = null;
+let testContractSigner = null;
+
+let usdContract = null;
+let usdContractSigner = null;
+
+let tradeContract = null;
+let tradeContractSigner = null;
+
+
+async function initWeb3(){
+	try{
+		let response = await window.ethereum.request({method: 'eth_requestAccounts'});
+		userAddr = response[0];
+		document.getElementById("showAddress").value=userAddr;
+		
+		//切換到goerli測試鏈
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x5' }],});
+		
+		provider = new ethers.providers.Web3Provider(window.ethereum);
+		updateBalance();
+		
+		
+		testContract = new ethers.Contract(testAddr, testABI, provider);
+		testContractSigner = testContract.connect(provider.getSigner() );
+		
+		usdContract = new ethers.Contract(usdAddr, usdABI, provider);
+		usdContractSigner = usdContract.connect(provider.getSigner() );
+		
+		tradeContract = new ethers.Contract(tradeAddr, tradeABI, provider);
+		tradeContractSigner = tradeContract.connect(provider.getSigner() );
+		
+		onSelTradePair();
+		
+	}catch(err){
+		alert(err.message);
+	}
+}
+initWeb3();
+
+window.ethereum.on('accountsChanged', function(accounts){
+	initWeb3();
+});
+
+window.ethereum.on('chainChanged', async function(networkId){
+	if(networkId!=5){
+		alert("this only works on goerli");
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x5' }],});
+	}
+});
+
+async function updateBalance(){
+	try{
+		let balanceNum=await provider.getBalance(userAddr);
+		document.getElementById("showBalance").value=utils.formatEther(balanceNum);
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+function onSelTradePair(){
+	nowPairID=parseInt(document.getElementById("tradePair").value);
+	
+	token1=pairAr[nowPairID][1];
+	token2=pairAr[nowPairID][2];
+	token1Deci=pairAr[nowPairID][3];
+	token2Deci=pairAr[nowPairID][4];
+
+	nowPriceShf=token1Deci - token2Deci + priceDeci;
+	
+	let token1Ar=document.getElementsByName("token1");
+	for(let i=0; i<token1Ar.length; i++){
+		token1Ar[i].innerHTML=token1;
+	}
+	
+	let token2Ar=document.getElementsByName("token2");
+	for(let i=0; i<token2Ar.length; i++){
+		token2Ar[i].innerHTML=token2;
+	}
+	
+	switch(token1){
+	case "ETH":{
+		token1Addr=orgAddr;
+		token1Contract=null;
+		token1ContractSigner=null;
+		break;
+	}
+	case "TEST":{
+		token1Addr=testAddr;
+		token1Contract=testContract;
+		token1ContractSigner=testContractSigner;
+		break;
+	}
+	case "USD":{
+		token1Addr=usdAddr;
+		token1Contract=usdContract;
+		token1ContractSigner=usdContractSigner;
+		break;
+	}
+	}
+	
+	
+	switch(token2){
+	case "ETH":{
+		token2Addr=orgAddr;
+		token2Contract=null;
+		token2ContractSigner=null;
+		break;
+	}
+	case "TEST":{
+		token2Addr=testAddr;
+		token2Contract=testContract;
+		token2ContractSigner=testContractSigner;
+		break;
+	}
+	case "USD":{
+		token2Addr=usdAddr;
+		token2Contract=usdContract;
+		token2ContractSigner=usdContractSigner;
+		break;
+	}
+	}
+
+	document.getElementById("buyPrice").value="";
+	document.getElementById("buyAmount").value="";
+	document.getElementById("buyGetAmount").value="";
+	document.getElementById("sellPrice").value="";
+	document.getElementById("sellAmount").value="";
+	document.getElementById("sellGetAmount").value="";
+	
+	switch(showPage){
+	case "tradeCoins":{
+		onTradeCoinsBtn();
+		break;
+	}
+	case "user":{
+		onUserBtn();
+		break;
+	}
+	case "orders":{
+		onOrdersBtn();
+		break;
+	}
+	case "log":{
+		onLogBtn();
+		break;
+	}
+	}
+}
+
+setTimeout(timerFunc, 15000);//每15秒更新一次狀態
+
+async function timerFunc(){
+	await updateState();
+	setTimeout(timerFunc, 15000);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+async function onTradeCoinsBtn(){
+	document.getElementById(showPage).style.display="none";
+	document.getElementById(showPage+"Tab").setAttribute("class", "");
+	
+	showPage="tradeCoins";
+	
+	document.getElementById(showPage).style.display="";
+	document.getElementById(showPage+"Tab").setAttribute("class", "tabSel");
+	
+	try{
+		if(token1Addr==orgAddr){
+			await updateBalance();
+			document.getElementById("ownAmount1").value=document.getElementById("showBalance").value;
+		}
+		else{
+			document.getElementById("ownAmount1").value=utils.formatUnits(await token1Contract.balanceOf(userAddr) , token1Deci);
+		}
+		
+		if(token2Addr==orgAddr){
+			await updateBalance();
+			document.getElementById("ownAmount2").value=document.getElementById("showBalance").value;
+		}
+		else{
+			document.getElementById("ownAmount2").value=utils.formatUnits(await token2Contract.balanceOf(userAddr) , token2Deci);
+		}
+		
+		updateState();
+	}catch(err){
+		alert(err.message);
+		return;
+	}
+}
+
+async function updateState(){
+	try{
+		let buyPriceEls=document.getElementsByName("buyPrice");
+		let buyAmountEls=document.getElementsByName("buyAmount");
+		let sellPriceEls=document.getElementsByName("sellPrice");
+		let sellAmountEls=document.getElementsByName("sellAmount");
+		let maxCount=buyPriceEls.length;
+		
+		let state=await tradeContract.getState(nowPairID, maxCount);
+		
+		if(state[0]!="0"){
+			document.getElementById("price").innerHTML=formatUnits(""+state[0] , nowPriceShf);
+		}
+		else{
+			document.getElementById("price").innerHTML="-";
+		}
+		
+		let buyPriceAr=state[1];
+		let buyAmountAr=state[2];
+		let buyCount=state[3];
+		let i=0;
+		for(; i<buyCount; i++){
+			buyPriceEls[i].innerHTML=formatUnits(""+buyPriceAr[i] , nowPriceShf);
+			buyAmountEls[i].innerHTML=formatUnits(""+buyAmountAr[i] , token1Deci);
+		}
+		for(; i<maxCount; i++){
+			buyPriceEls[i].innerHTML="-";
+			buyAmountEls[i].innerHTML="-";
+		}
+		
+		let sellPriceAr=state[4];
+		let sellAmountAr=state[5];
+		let sellCount=state[6];
+		
+		i=maxCount-1;
+		let j=0;
+		for(; i>=maxCount-sellCount; i--, j++){
+			
+			let sellPrice=sellPriceAr[j];
+			sellPriceEls[i].innerHTML=formatUnits(""+sellPrice , nowPriceShf);
+			
+			let sellAmount=sellAmountAr[j];
+			sellAmount=sellAmount.mul(sellPrice);
+			
+			sellAmountEls[i].innerHTML=formatUnits(""+sellAmount , priceDeci+token1Deci);
+		}
+		for(; i>=0; i--){
+			sellPriceEls[i].innerHTML="-";
+			sellAmountEls[i].innerHTML="-";
+		}
+	}catch(err){
+		alert(err.message);
+		return;
+	}
+}
+
+function onBuyPriceInput(){
+	let buyPrice=getBuyPrice();
+	if(buyPrice==-1){
+		document.getElementById("buyPrice").setAttribute("class", "bad");
+		return;
+	}
+	document.getElementById("buyPrice").setAttribute("class", "");
+	
+	if(isZero(buyPrice) ){
+		return;
+	}
+	
+	let buyAmount=getBuyAmount();
+	if(buyAmount==-1){
+		return;
+	}
+	
+	buyPrice=utils.parseUnits(buyPrice, showPriceDeci);
+	buyAmount=utils.parseUnits(buyAmount, token1Deci+token2Deci+showPriceDeci);
+	
+	let buyGetAmount=buyAmount.div(buyPrice);
+	buyGetAmount=utils.formatUnits(buyGetAmount, token1Deci+token2Deci);
+	buyGetAmount=trimToDeci(buyGetAmount, token2Deci);
+	
+	document.getElementById("buyGetAmount").value=buyGetAmount;
+	document.getElementById("buyGetAmount").setAttribute("class", "");
+}
+
+function onBuyAmountInput(){
+	let buyAmount=getBuyAmount();
+	if(buyAmount==-1){
+		document.getElementById("buyAmount").setAttribute("class", "bad");
+		return;
+	}
+	document.getElementById("buyAmount").setAttribute("class", "");
+	
+	onBuyPriceInput();
+}
+
+function onBuyGetAmountInput(){
+	let buyGetAmount=getBuyGetAmount();
+	if(buyGetAmount==-1){
+		document.getElementById("buyGetAmount").setAttribute("class", "bad");
+		return;
+	}
+	document.getElementById("buyGetAmount").setAttribute("class", "");
+	
+	
+	let buyPrice=getBuyPrice();
+	if(buyPrice==-1 || isZero(buyPrice) ){
+		return;
+	}
+	
+	buyPrice=utils.parseUnits(buyPrice, showPriceDeci);
+	buyGetAmount=utils.parseUnits(buyGetAmount, token2Deci);
+
+	let buyAmount=buyGetAmount.mul(buyPrice);
+	buyAmount=formatUnits(buyAmount, showPriceDeci+token2Deci);
+	buyAmount=trimToDeci(buyAmount, token1Deci);
+	
+	document.getElementById("buyAmount").value=buyAmount;
+	document.getElementById("buyAmount").setAttribute("class", "");
+}
+
+function onSellPriceInput(){
+	let sellPrice=getSellPrice();
+	if(sellPrice==-1){
+		document.getElementById("sellPrice").setAttribute("class", "bad");
+		return;
+	}
+	document.getElementById("sellPrice").setAttribute("class", "");
+	
+	if(isZero(sellPrice) ){
+		return;
+	}
+	
+	let sellAmount=getSellAmount();
+	if(sellAmount==-1){
+		return;
+	}
+	
+	sellPrice=utils.parseUnits(sellPrice, showPriceDeci);
+	sellAmount=utils.parseUnits(sellAmount, token2Deci);
+
+	let sellGetAmount=sellAmount.mul(sellPrice);
+	sellGetAmount=formatUnits(sellGetAmount, showPriceDeci+token2Deci);
+	sellGetAmount=trimToDeci(sellGetAmount, token1Deci);
+	
+	document.getElementById("sellGetAmount").value=sellGetAmount;
+	document.getElementById("sellGetAmount").setAttribute("class", "");
+}
+
+function onSellAmountInput(){
+	let sellAmount=getSellAmount();
+	if(sellAmount==-1){
+		document.getElementById("sellAmount").setAttribute("class", "bad");
+		return;
+	}
+	document.getElementById("sellAmount").setAttribute("class", "");
+	
+	onSellPriceInput();
+}
+
+function onSellGetAmountInput(){
+	let sellGetAmount=getSellGetAmount();
+	if(sellGetAmount==-1){
+		document.getElementById("sellGetAmount").setAttribute("class", "bad");
+		return;
+	}
+	document.getElementById("sellGetAmount").setAttribute("class", "");
+	
+	
+	let sellPrice=getSellPrice();
+	if(sellPrice==-1 || isZero(sellPrice)){
+		return;
+	}
+	
+	sellPrice=utils.parseUnits(sellPrice, showPriceDeci);
+	sellGetAmount=utils.parseUnits(sellGetAmount, showPriceDeci+token1Deci+token2Deci);
+	
+	let sellAmount=sellGetAmount.div(sellPrice);
+	sellAmount=utils.formatUnits(sellAmount, token1Deci+token2Deci);
+	sellAmount=trimToDeci(sellAmount, token2Deci);
+	
+	document.getElementById("sellAmount").value=sellAmount;
+	document.getElementById("sellAmount").setAttribute("class", "");
+}
+
+async function onBuyBtn(){
+	let isOrder=document.getElementById("buyLimitType").checked;
+	
+	let buyPrice=getBuyPrice();
+	if(buyPrice==-1){
+		alert("error : buyPrice is not a legal price");
+		return;
+	}
+	else if(isOrder && isZero(buyPrice) ){
+		alert("error : limit order need a price bigger than 0");
+		return;
+	}
+	else if(!isOrder && isZero(buyPrice) ){
+		buyPrice=""+(2n**256n - 1n);
+	}
+	else{
+		buyPrice=formatUnits(buyPrice, -nowPriceShf);
+	}
+	
+	let buyAmount=getBuyAmount();
+	if(buyAmount==-1 || isZero(buyAmount) ){
+		alert("error : buyAmount is not a legal amount");
+		return;
+	}
+	else{
+		buyAmount=utils.parseUnits(buyAmount, token1Deci);
+		
+		let ownAmount=document.getElementById("ownAmount1").value;
+		ownAmount=utils.parseUnits(ownAmount, token1Deci);
+		if(buyAmount.gt(ownAmount) ){
+			alert("error : have not enough "+ token1 +" balance");
+			return;
+		}
+	}
+	
+	try{
+		let tx;
+		if(token1Addr==orgAddr){
+			let options = {value: buyAmount};
+			tx = await tradeContractSigner.buy(nowPairID, buyPrice, buyAmount, isOrder, options);
+		}
+		else{
+			tx = await tradeContractSigner.buy(nowPairID, buyPrice, buyAmount, isOrder);
+		}
+		await tx.wait();
+		
+		updateBalance();
+		onTradeCoinsBtn();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function onSellBtn(){
+	let isOrder=document.getElementById("sellLimitType").checked;
+	
+	let sellPrice=getSellPrice();
+	if(sellPrice==-1){
+		alert("error : sellPrice is not a legal price");
+		return;
+	}
+	else if(isOrder && isZero(sellPrice) ){
+		alert("error : limit order need a price bigger than 0");
+		return;
+	}
+	else if(!isOrder && isZero(sellPrice) ){
+		sellPrice="0";
+	}
+	else{
+		sellPrice=formatUnits(sellPrice, -nowPriceShf);
+	}
+	
+	let sellAmount=getSellAmount();
+	if(sellAmount==-1 || isZero(sellAmount) ){
+		alert("error : sellAmount is not a legal amount");
+		return;
+	}
+	else{
+		sellAmount=utils.parseUnits(sellAmount, token2Deci);
+		
+		let ownAmount=document.getElementById("ownAmount2").value;
+		ownAmount=utils.parseUnits(ownAmount, token2Deci);
+		if(sellAmount.gt(ownAmount) ){
+			alert("error : have not enough "+ token2 +" balance");
+			return;
+		}
+	}
+	
+	try{
+		let tx;
+		if(token2Addr==orgAddr){
+			let options = {value: sellAmount};
+			tx = await tradeContractSigner.sell(nowPairID, sellPrice, sellAmount, isOrder, options);
+		}
+		else{
+			tx = await tradeContractSigner.sell(nowPairID, sellPrice, sellAmount, isOrder);
+		}
+		await tx.wait();
+		
+		updateBalance();
+		onTradeCoinsBtn();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+function getBuyPrice(){
+	let buyPrice=document.getElementById("buyPrice").value;
+	if(buyPrice==""){
+		return "0";
+	}
+	else if(!isNum(buyPrice) || getDeci(buyPrice)>showPriceDeci){
+		return -1;
+	}
+	return buyPrice;
+}
+
+function getBuyAmount(){
+	let buyAmount=document.getElementById("buyAmount").value;
+	if(!isNum(buyAmount) || getDeci(buyAmount)>token1Deci){
+		return -1;
+	}
+	return buyAmount;
+}
+
+function getBuyGetAmount(){
+	let buyGetAmount=document.getElementById("buyGetAmount").value;
+	if(!isNum(buyGetAmount) || getDeci(buyGetAmount)>token2Deci){
+		return -1;
+	}
+	return buyGetAmount;
+}
+
+function getSellPrice(){
+	let sellPrice=document.getElementById("sellPrice").value;
+	if(sellPrice==""){
+		return "0";
+	}
+	else if(!isNum(sellPrice) || getDeci(sellPrice)>showPriceDeci){
+		return -1;
+	}
+	return sellPrice;
+}
+
+function getSellAmount(){
+	let sellAmount=document.getElementById("sellAmount").value;
+	if(!isNum(sellAmount) || getDeci(sellAmount)>token2Deci){
+		return -1;
+	}
+	return sellAmount;
+}
+
+function getSellGetAmount(){
+	let sellGetAmount=document.getElementById("sellGetAmount").value;
+	if(!isNum(sellGetAmount) || getDeci(sellGetAmount)>token1Deci){
+		return -1;
+	}
+	return sellGetAmount;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+async function onUserBtn(){
+	document.getElementById(showPage).style.display="none";
+	document.getElementById(showPage+"Tab").setAttribute("class", "");
+	
+	showPage="user";
+	
+	document.getElementById(showPage).style.display="";
+	document.getElementById(showPage+"Tab").setAttribute("class", "tabSel");
+	
+	document.getElementById("user").innerHTML="";
+	
+	try{
+		let orderAr=await tradeContract.getUserOrder(userAddr, nowPairID);
+		
+		let str="";
+		for(let i=0; i<orderAr.length; i++){
+			
+			if(orderAr[i].orderID==0){
+				break;
+			}
+
+			str+="<div class='dataBlock'><p>";
+			str+="user: " + orderAr[i].user + "<br>";
+			str+="type: " + (orderAr[i].isSell ? "<span class='sell'>sell" : "<span class='buy'>buy" ) + "</span><br>";
+			str+="pairID: " + orderAr[i].pairID + " (" + pairAr[orderAr[i].pairID][0] + ")<br>";
+			
+			let showPrice=formatUnits(""+orderAr[i].price , nowPriceShf);
+			
+			str+="price: " + orderAr[i].price + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+			
+			if(orderAr[i].isSell){
+				let showValue=utils.formatUnits(""+orderAr[i].value , token2Deci);
+				str+="value: " + orderAr[i].value + " (" + showValue + " " + token2 + ")<br>";
+			}
+			else{
+				let showValue=utils.formatUnits(""+orderAr[i].value , token1Deci);
+				str+="value: " + orderAr[i].value + " (" + showValue + " " + token1 + ")<br>";
+			}
+			
+			str+="orderID: " + orderAr[i].orderID + "<br>";
+			str+="<br><button onclick='onDelOrderBtn(" + orderAr[i].orderID + ")'>Delete Order</button></p></div><div class='blankBlock'></div>";
+		}
+		
+		document.getElementById("user").innerHTML=str;
+		
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function onDelOrderBtn(orderID){
+	try{
+		let tx = await tradeContractSigner.delOrder(orderID);
+		
+		await tx.wait();
+		updateBalance();
+		onUserBtn();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+async function onOrdersBtn(){
+	document.getElementById(showPage).style.display="none";
+	document.getElementById(showPage+"Tab").setAttribute("class", "");
+	
+	showPage="orders";
+	
+	document.getElementById(showPage).style.display="";
+	document.getElementById(showPage+"Tab").setAttribute("class", "tabSel");
+	
+	document.getElementById("orders").innerHTML="";
+	
+	try{
+		let data=await tradeContract.getOrders(nowPairID, 100);//買單和賣單最多顯示100個
+		
+		let str="";
+		for(let j=0; j<4; j+=2){
+			let orderAr=data[j];
+			let orderLen=data[j+1];
+			
+			for(let i=0; i<orderLen; i++){
+				str+="<div class='dataBlock'><p>";
+				str+="user: " + orderAr[i].user + "<br>";
+				str+="type: " + (orderAr[i].isSell ? "<span class='sell'>sell" : "<span class='buy'>buy" ) + "</span><br>";
+				str+="pairID: " + orderAr[i].pairID + " (" + pairAr[orderAr[i].pairID][0] + ")<br>";
+				
+				let showPrice=formatUnits(""+orderAr[i].price , nowPriceShf);
+				
+				str+="price: " + orderAr[i].price + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+				
+				if(orderAr[i].isSell){
+					let showValue=utils.formatUnits(""+orderAr[i].value , token2Deci);
+					str+="value: " + orderAr[i].value + " (" + showValue + " " + token2 + ")<br>";
+				}
+				else{
+					let showValue=utils.formatUnits(""+orderAr[i].value , token1Deci);
+					str+="value: " + orderAr[i].value + " (" + showValue + " " + token1 + ")<br>";
+				}
+				
+				str+="orderID: " + orderAr[i].orderID + "<br></div><div class='blankBlock'></div>";
+			}
+		}
+		
+		document.getElementById("orders").innerHTML=str;
+		
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+async function onLogBtn(){
+	document.getElementById(showPage).style.display="none";
+	document.getElementById(showPage+"Tab").setAttribute("class", "");
+	
+	showPage="log";
+	
+	document.getElementById(showPage).style.display="";
+	document.getElementById(showPage+"Tab").setAttribute("class", "tabSel");
+	
+	document.getElementById("showLog").innerHTML="";
+	document.getElementById("startBlockTime").innerHTML="";
+	document.getElementById("endBlockTime").innerHTML="";
+	
+	try{
+		
+		let nowBlockNum = await provider.getBlockNumber();
+		//document.getElementById("startBlock").value=nowBlockNum - Math.floor(24*60*60/13);
+		document.getElementById("startBlock").value=0;
+		document.getElementById("endBlock").value=nowBlockNum;
+		
+		await showStartBlockTime();
+		await showEndBlockTime();
+		showLog();
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function showLog(){
+	let time1=document.getElementById("startBlockTime").innerHTML;
+	let time2=document.getElementById("endBlockTime").innerHTML;
+	if(time1=="" || time2=="" || time1=="error" || time2=="error"){
+		alert("error block time");
+		return;
+	}
+	
+	let startBlockNum=parseInt(document.getElementById("startBlock").value);
+	let endBlockNum=parseInt(document.getElementById("endBlock").value);
+	
+	if(startBlockNum > endBlockNum){
+		alert("error : startBlockNum > endBlockNum");
+		return;
+	}
+	
+	try{
+		let filter = tradeContract.filters.Trade(null, null, null, null, nowPairID);
+		let data = await tradeContract.queryFilter(filter, startBlockNum, endBlockNum);
+		
+		let str="";
+		for(let i=0; i<data.length; i++){
+			str+="<div class='blankBlock'></div><div class='dataBlock'><p>";
+			str+="time: " + timestampToStr(data[i].args[0]) + "<br>";
+			
+			let showPrice=formatUnits(""+data[i].args[5] , nowPriceShf);
+			
+			let showValue1=utils.formatUnits(""+data[i].args[6] , token1Deci);
+			let showValue2=utils.formatUnits(""+data[i].args[7] , token2Deci);
+			
+			switch(data[i].args[1]){
+				case 0:{//AddOrder
+					str+="type: AddOrder<br>";
+					
+					str+="buyUser: " + data[i].args[2] + "<br>";
+					str+="sellUser: " + data[i].args[3] + "<br>";
+					str+="pairID: " + data[i].args[4] + "<br>";
+					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+					
+					str+="buyValue: " + data[i].args[6] + " (" + showValue1 + " " + token1 + ")<br>";
+					str+="sellValue: " + data[i].args[7] + " (" + showValue2 + " " + token2 + ")<br>";
+					
+					str+="orderID: " + data[i].args[8] + "<br>";
+					break;
+				}
+				case 1:{//DelOrder
+					str+="type: DelOrder<br>";
+				
+					str+="buyUser: " + data[i].args[2] + "<br>";
+					str+="sellUser: " + data[i].args[3] + "<br>";
+					str+="pairID: " + data[i].args[4] + "<br>";
+					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+					
+					str+="buyValue: " + data[i].args[6] + " (" + showValue1 + " " + token1 + ")<br>";
+					str+="sellValue: " + data[i].args[7] + " (" + showValue2 + " " + token2 + ")<br>";
+					
+					str+="orderID: " + data[i].args[8] + "<br>";
+					break;
+				}
+				case 2:{//TradeOrder
+					str+="type: TradeOrder<br>";
+				
+					str+="buyUser: " + data[i].args[2] + "<br>";
+					str+="sellUser: " + data[i].args[3] + "<br>";
+					str+="pairID: " + data[i].args[4] + "<br>";
+					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+					
+					str+="buyValue: " + data[i].args[6] + " (" + showValue1 + " " + token1 + ")<br>";
+					str+="sellValue: " + data[i].args[7] + " (" + showValue2 + " " + token2 + ")<br>";
+					
+					str+="orderID: " + data[i].args[8] + "<br>";
+					str+="isEndOrder: " + data[i].args[9] + "<br>";
+					break;
+				}
+				case 3:{//Transfer
+					str+="type: Transfer<br>";
+					
+					str+="fromAddr: " + data[i].args[2] + "<br>";
+					str+="toAddr: " + data[i].args[3] + "<br>";
+					str+="pairID: " + data[i].args[4] + "<br>";
+					
+					str+="token1 value: " + data[i].args[6] + " (" + showValue1 + " " + token1 + ")<br>";
+					str+="token2 value: " + data[i].args[7] + " (" + showValue2 + " " + token2 + ")<br>";
+					break;
+				}
+				default:{
+					alert("log type error - " + data[i].args[1]);
+				}
+			}
+			str+="</p></div>";
+		}
+		
+		document.getElementById("showLog").innerHTML=str;
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function showStartBlockTime(){
+	if(! /^\d+$/.test(document.getElementById("startBlock").value)  ){
+		document.getElementById("startBlockTime").innerHTML="error";
+		return;
+	}
+	
+	try{
+		document.getElementById("startBlockTime").innerHTML="";
+		let startBlockNum=parseInt(document.getElementById("startBlock").value);
+		document.getElementById("startBlockTime").innerHTML=timestampToStr((await provider.getBlock(startBlockNum) ).timestamp);
+	}catch(err){
+		alert(err.message);
+	}
+		
+}
+
+async function showEndBlockTime(){
+	if(! /^\d+$/.test(document.getElementById("endBlock").value) ){
+		document.getElementById("endBlockTime").innerHTML="error";
+		return;
+	}
+	
+	try{
+		document.getElementById("endBlockTime").innerHTML="";
+		let endBlockNum=parseInt(document.getElementById("endBlock").value);
+		document.getElementById("endBlockTime").innerHTML=timestampToStr((await provider.getBlock(endBlockNum) ).timestamp);
+	}catch(err){
+		alert(err.message);
+	}
+		
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+async function onFaucetBtn(){
+	document.getElementById(showPage).style.display="none";
+	document.getElementById(showPage+"Tab").setAttribute("class", "");
+	
+	showPage="faucet";
+	
+	document.getElementById(showPage).style.display="";
+	document.getElementById(showPage+"Tab").setAttribute("class", "tabSel");
+	
+	try{
+		document.getElementById("testAllow").value=await testContract.allowance(userAddr, tradeAddr);
+		document.getElementById("usdAllow").value=await usdContract.allowance(userAddr, tradeAddr);
+	}catch(err){
+		alert(err.message);
+		return;
+	}
+}
+
+async function onAddTestBtn(){
+	try {
+		const isAdded = await window.ethereum.request({
+			method: 'wallet_watchAsset',
+			params: {
+				type: 'ERC20', 
+				options: {
+					address: testAddr,
+					symbol: "TEST",
+					decimals: 2,
+					image: "https://raw.githubusercontent.com/vcckvv/SmartContract/gh-pages/TestToken/icon.png",
+				},
+			},
+		});
+	}catch(error){
+		alert(err.message);
+	}
+}
+
+async function onGetTestBtn(){
+	try{
+		let tx = await testContractSigner.mint();
+		
+		await tx.wait();
+		updateBalance();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function onAddUsdBtn(){
+	try {
+		const isAdded = await window.ethereum.request({
+			method: 'wallet_watchAsset',
+			params: {
+				type: 'ERC20', 
+				options: {
+					address: usdAddr,
+					symbol: "USD",
+					decimals: 18,
+					image: "https://raw.githubusercontent.com/vcckvv/SmartContract/gh-pages/TestToken/icon.png",
+				},
+			},
+		});
+	}catch(error){
+		alert(err.message);
+	}
+}
+
+async function onGetUsdBtn(){
+	try{
+		let tx = await usdContractSigner.mint();
+		
+		await tx.wait();
+		updateBalance();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function onMaxAllowTestBtn(){
+	try{
+		let tx = await testContractSigner.approve(tradeAddr, ""+(2n**256n - 1n) );
+		await tx.wait();
+		
+		updateBalance();
+		document.getElementById("testAllow").value=await testContract.allowance(userAddr, tradeAddr);
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function onMaxAllowUsdBtn(){
+	try{
+		let tx = await usdContractSigner.approve(tradeAddr, ""+(2n**256n - 1n) );
+		await tx.wait();
+		
+		updateBalance();
+		document.getElementById("usdAllow").value=await usdContract.allowance(userAddr, tradeAddr);
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function insert(str, index, value) {
+    return str.substr(0, index) + value + str.substr(index);
+}
+
+function isNum(numStr){
+	return /^\d+(\.\d+)?$/.test(numStr);
+}
+
+function isZero(numStr){
+	return /^0+(\.0+)?$/.test(numStr);
+}
+
+function getStrNum(numStr){
+	return numStr.match(/\d+(\.\d+)?/)[0];
+}
+
+function getDeci(numStr){
+	let pos=numStr.indexOf(".");
+	return pos==-1 ? 0 : (numStr.length - 1 - pos);
+}
+
+function trimToDeci(numStr, toDeci){
+	let deci=getDeci(numStr);
+	if(deci<=toDeci){
+		if(/^0+(\.0+)?$/.test(numStr) ){
+			return "0";
+		}
+		return numStr;
+	}
+	
+	numStr=numStr.substring(0, numStr.length-(deci-toDeci) );
+	if(/^0+(\.0+)?$/.test(numStr) ){
+		return "0";
+	}
+	return numStr;
+}
+
+function formatUnits(numStr, shfNum){
+	numStr=""+numStr;
+	
+	if(isZero(numStr) ){
+		return "0";
+	}
+	
+	let pos=numStr.indexOf(".");
+	let deci=(pos==-1 ? 0 : (numStr.length - 1 - pos) );
+	
+	numStr=numStr.replace(".", "");
+	
+	let newDeci=deci+shfNum;
+	if(newDeci==0){
+		return numStr;
+	}
+	else if(newDeci>0){
+		let insertPos=numStr.length-newDeci;
+		if(insertPos<0){
+			numStr="0".repeat(-insertPos+1) + numStr;
+		}
+		numStr=insert(numStr, numStr.length-newDeci, ".");
+		numStr=numStr.replace(/0+$/gm, "");
+		
+		if(numStr.charAt(0)=="."){
+			numStr="0"+numStr;
+		}
+		else if(numStr.charAt(numStr.length-1)=="."){
+			numStr=numStr.substring(0, numStr.length-1);
+		}
+		return numStr;
+	}
+	else{//newDeci<0
+		numStr=numStr + "0".repeat(-newDeci);
+		return numStr.replace(/^0+/gm, "");
+	}
+}
+
+function timestampToStr(timestamp){
+	let time = new Date(timestamp * 1000);
+	let year = time.getFullYear();
+	let month = time.getMonth()+1;
+	let date = time.getDate();
+	let hour = time.getHours();
+	let min = time.getMinutes();
+	let sec = time.getSeconds();
+			
+	return year + "/" + month + "/" + date + "-" + hour + ":" + min + ":" + sec;
+}
+
+</script>
+</html>
