@@ -10,7 +10,7 @@
 		<tr align="left"><td>名字：<input id="showName" size="50" maxlength="30" />　<button onclick="onSetNameBtn()" >設定名字</button></td></tr>
 		<tr align="left"><td>輸入文章內容：</td></tr>
 		<tr><td><textarea id="inputText" rows="5" cols="70"  maxlength="1000"></textarea></td></tr>
-		<tr align="left"><td><button onclick="onPostBtn()">發出文章</button>　<a href="https://rinkebyfaucet.com/" target="_blank">rinkeby水龍頭網站</a></td></tr>
+		<tr align="left"><td><button onclick="onPostBtn()">發出文章</button>　<a href="https://faucets.chain.link/goerli" target="_blank">goerli水龍頭網站</a></td></tr>
 	</table>
 	<hr>
 	<div id="articleList">
@@ -91,12 +91,11 @@ let articleAreas=document.getElementsByName("article");
 for(let i=0; i<pageSize ; i++){
 	tables[i].style.display="none";
 }
-	
-//https://rinkeby.etherscan.io/address/0x16dDAD64b5e67b5BA23E69761Aa92EA78ABfF917
+
 
 // The Contract interface
 const abi = [{"inputs": [],"stateMutability": "nonpayable","type": "constructor"},{"inputs": [{"internalType": "string","name": "str","type": "string"}],"name": "addArticle","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "uint256","name": "index","type": "uint256"}],"name": "getArticle","outputs": [{"internalType": "address","name": "","type": "address"},{"internalType": "string","name": "","type": "string"},{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "getArticleCount","outputs": [{"internalType": "uint256","name": "index","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "uint256","name": "index","type": "uint256"},{"internalType": "uint256","name": "count","type": "uint256"}],"name": "getArticles","outputs": [{"internalType": "address[]","name": "","type": "address[]"},{"internalType": "string[]","name": "","type": "string[]"},{"internalType": "uint256[]","name": "","type": "uint256[]"},{"internalType": "string[]","name": "","type": "string[]"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "addr","type": "address"}],"name": "getWriterName","outputs": [{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "string","name": "name","type": "string"}],"name": "isUsedName","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "string","name": "name","type": "string"}],"name": "setWriterName","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "uint256","name": "num","type": "uint256"}],"name": "testMassArticle","outputs": [],"stateMutability": "nonpayable","type": "function"}];
-const contractAddress = "0x16dDAD64b5e67b5BA23E69761Aa92EA78ABfF917";
+const contractAddress = "0xC9E45809aaCa0C8aa485d1BD558276E03e9451f6";
 
 let address = null;
 let provider = null;
@@ -110,8 +109,8 @@ async function initWeb3(isInitArticle){
 		address = response[0];
 		document.querySelector('#showAddress').value=address;
 		
-		//切換到rinkeby測試鏈
-		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
+		//切換到goerli測試鏈
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x5' }],});
 		
 		provider = new ethers.providers.Web3Provider(window.ethereum);
 		updateBalance();
@@ -136,9 +135,9 @@ window.ethereum.on('accountsChanged', function(accounts){
 });
 
 window.ethereum.on('chainChanged', async function(networkId){
-	if(networkId!=4){
-		alert("this only works on rinkeby");
-		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
+	if(networkId!=5){
+		alert("this only works on goerli");
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x5' }],});
 	}
 });
 
