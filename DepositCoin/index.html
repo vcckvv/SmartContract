@@ -12,7 +12,7 @@
 
 // The Contract interface
 const abi = [{"constant":false,"inputs":[],"name":"pay","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"v","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"addr","type":"address"}],"name":"setTokenAddr","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getContractTokenBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"v","type":"uint256"}],"name":"withdrawToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getTokenAddr","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"v","type":"uint256"}],"name":"depositToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getContractBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTokenBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
-const contractAddress = "0x445B6bD3f88Cb8eEe0273042c1002979E2C5314f";
+const contractAddress = "0x416d91a77948ca36f79a9609c239a41bd5e0e566";
 
 let address = null;
 let provider = null;
@@ -25,7 +25,7 @@ async function init(){
 		address = response[0];
 		
 		//切換到rinkeby測試鏈
-		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x4' }],});
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x5' }],});
 		
 		provider = new ethers.providers.Web3Provider(window.ethereum);
 		contract = new ethers.Contract(contractAddress, abi, provider);
@@ -40,7 +40,7 @@ async function onPayBtn(){
 	try{
 		const options = {value: ethers.utils.parseEther("0.00000001")};
 		let tx = await contractWithSigner.pay(options);
-		alert("https://rinkeby.etherscan.io/tx/" + tx.hash);
+		alert("https://goerli.etherscan.io/tx/" + tx.hash);
 	}catch(err){
 		if(err.code==4001){//reject
 			alert("User rejected tx.");
