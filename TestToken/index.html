@@ -51,7 +51,7 @@ window.ethereum.on('accountsChanged', function (accounts) {
 
 window.ethereum.on('chainChanged', async function(networkId){
 	if(networkId!=5){
-		alert("this only works on rinkeby");
+		alert("this only works on goerli");
 		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x5' }],});
 	}
 });
