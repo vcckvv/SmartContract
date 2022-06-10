@@ -840,6 +840,17 @@ async function onBuyBtn(){
 	}
 	else{
 		buyPrice=formatUnits(buyPrice, -nowPriceShf);
+		
+		let pos=buyPrice.indexOf(".");
+		if(pos!=-1){
+			buyPrice=buyPrice.substring(0, pos);
+			
+			if(isZero(buyPrice) ){
+				alert("error : the price is too small, so the transformed price is a zero");
+				return;
+			}
+			alert("warning: for the restriction of price's decimal, the price transformed: " + getBuyPrice() + " -> " + formatUnits(buyPrice, nowPriceShf) );
+		}
 	}
 	
 	let buyAmount=getBuyAmount();
@@ -898,6 +909,17 @@ async function onSellBtn(){
 	}
 	else{
 		sellPrice=formatUnits(sellPrice, -nowPriceShf);
+		
+		let pos=sellPrice.indexOf(".");
+		if(pos!=-1){
+			sellPrice=sellPrice.substring(0, pos);
+			
+			if(isZero(sellPrice) ){
+				alert("error : the price is too small, so the transformed price is a zero");
+				return;
+			}
+			alert("warning: for the restriction of price's decimal, the price transformed: " + getSellPrice() + " -> " + formatUnits(sellPrice, nowPriceShf) );
+		}
 	}
 	
 	let sellAmount=getSellAmount();
