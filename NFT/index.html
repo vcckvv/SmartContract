@@ -30,8 +30,7 @@ async function init(){
 		address = response[0];
 		document.querySelector('#showAddress').value=address;
 		
-		//切換到mumbai測試鏈
-		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x13881' }],});
+		await switchMumbai();
 		
 		provider = new ethers.providers.Web3Provider(window.ethereum);
 		
@@ -53,10 +52,39 @@ window.ethereum.on('accountsChanged', function (accounts) {
 
 window.ethereum.on('chainChanged', async function(networkId){
 	if(networkId!=0x13881){
-		alert("this only works on mumbai");
+		alert("this only works on Mumbai testnet");
 		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x13881' }],});
 	}
 });
+
+async function switchMumbai(){
+	try{
+		await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{ chainId: '0x13881' }],});
+	}catch(err){
+		if(err.code == 4902){//has not been added to MetaMask
+			const chainData = [{
+			    chainId: '0x13881',
+			    chainName: 'Mumbai',
+			    nativeCurrency:{
+			    	name: 'MATIC',
+			    	symbol: 'MATIC',
+			    	decimals: 18
+			    },
+			    rpcUrls: ['https://matic-mumbai.chainstacklabs.com'],
+			    blockExplorerUrls: ['https://mumbai.polygonscan.com/'],
+			}];
+			
+			try{
+				await window.ethereum.request({method: 'wallet_addEthereumChain', params: chainData,});
+			}catch(err2){
+				alert(err2.message);
+			}
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
 
 async function onGetNFT(num){
 	try{
