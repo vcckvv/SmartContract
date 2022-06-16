@@ -1,4 +1,4 @@
-pragma solidity ^0.8.14;
+pragma solidity ^0.8.15;
 // SPDX-License-Identifier: MIT
 
 import "./TreeLibrary.sol";
@@ -151,17 +151,17 @@ struct TradeData{
 	bool isEndOrder;
 }
 
-//¦]¬°¦³Contract code size 24576 bytes­­¨î¡A©Ò¥H­n¤À¥X¤@³¡¥÷¨ç¼Æ¤º®e¨ìlibrary
+//å› ç‚ºæœ‰Contract code size 24576 bytesé™åˆ¶ï¼Œæ‰€ä»¥è¦åˆ†å‡ºä¸€éƒ¨ä»½å‡½æ•¸å…§å®¹åˆ°library
 library TradeCoinsLib {
 	using OrderTreeLib for OrderTree;
 	using PriceTreeLib for PriceTree;
 
-	//¶W¹L3­ÓindexedÅÜ¼Æ·|¥X²{½sÄ¶¿ù»~
+	//è¶…é3å€‹indexedè®Šæ•¸æœƒå‡ºç¾ç·¨è­¯éŒ¯èª¤
 	event Trade(uint time, TradeType tradeType,
 			address indexed buyUser, address indexed sellUser, uint32 indexed pairID, uint price,
 			uint buyValue, uint sellValue, uint orderID, bool isEndOrder);
 
-	function eventTrade(TradeData memory data) internal {//ª½±µemitªº¸Ü·|¹J¨ìstack too deep¿ù»~
+	function eventTrade(TradeData memory data) internal {//ç›´æ¥emitçš„è©±æœƒé‡åˆ°stack too deepéŒ¯èª¤
 		emit Trade(block.timestamp, data.tradeType,
 			data.buyUser, data.sellUser, data.pairID, data.price, 
 			data.buyValue, data.sellValue, data.orderID, data.isEndOrder);
@@ -171,6 +171,12 @@ library TradeCoinsLib {
 		emit Trade(block.timestamp, TradeType.Transfer,
 			fromUser, toUser, pairID, 0, 
 			isToken1 ? value : 0, isToken1 ? 0 : value, 0, false);
+	}
+	
+	function sendOrgCoin(address addr, uint value) public {
+		if(payable(addr).send(value)==false){
+			//é‡åˆ°ç‰¹æ®Šåˆç´„å¯èƒ½å‡ºéŒ¯ï¼Œé€™è£¡è·³ééŒ¯èª¤ï¼Œé¿å…å–®å­æ²’è¾¦æ³•è¢«åƒæ‰è€Œå¡ä½
+		}
 	}
 
 	function eatBuyOrder(uint orderID, uint value, Token t1, Token t2,
@@ -182,10 +188,10 @@ library TradeCoinsLib {
 
 		Order memory order=tradeCoins.getOrder(orderID);
 
-		uint chgValue=value*order.price/tradeCoins.cnPriceStd();//Àu¥ı¥H­q³æªº»ù®æ¬°¥D
+		uint chgValue=value*order.price/tradeCoins.cnPriceStd();//å„ªå…ˆä»¥è¨‚å–®çš„åƒ¹æ ¼ç‚ºä¸»
 		if(chgValue>=order.value){
 			if(tokenAddr1==tradeCoins.cnOrgCoin() ){
-				payable(msg.sender).transfer(order.value);
+				sendOrgCoin(msg.sender, order.value);
 			}
 			else{
 				t1.transfer(msg.sender, order.value);
@@ -196,7 +202,7 @@ library TradeCoinsLib {
 			uint subValue=order.value*tradeCoins.cnPriceStd()/order.price;
 
 			if(tokenAddr2==tradeCoins.cnOrgCoin() ){
-				payable(order.user).transfer(subValue);
+				sendOrgCoin(order.user, subValue);
 			}
 			else{
 				t2.transfer(order.user, subValue);
@@ -216,7 +222,7 @@ library TradeCoinsLib {
 			uint subValue=chgValue;
 
 			if(tokenAddr1==tradeCoins.cnOrgCoin() ){
-				payable(msg.sender).transfer(subValue);
+				sendOrgCoin(msg.sender, subValue);
 			}
 			else{
 				t1.transfer(msg.sender, subValue);
@@ -228,7 +234,7 @@ library TradeCoinsLib {
 			tradeCoins.decPriceAmount(order.pairID, order.price, subValue);
 			
 			if(tokenAddr2==tradeCoins.cnOrgCoin() ){
-				payable(order.user).transfer(value);
+				sendOrgCoin(order.user, value);
 			}
 			else{
 				t2.transfer(order.user, value);
@@ -242,9 +248,9 @@ library TradeCoinsLib {
 			value=0;
 			
 			if(isEndOrder){
-				if(order.value>0){//§C©ó³Ì¤p¥i¥æ©ö­È¡A§â³Ñ¤UvalueÁÙµ¹¨Ï¥ÎªÌ
+				if(order.value>0){//ä½æ–¼æœ€å°å¯äº¤æ˜“å€¼ï¼ŒæŠŠå‰©ä¸‹valueé‚„çµ¦ä½¿ç”¨è€…
 					if(tokenAddr1==tradeCoins.cnOrgCoin() ){
-						payable(order.user).transfer(order.value);
+						sendOrgCoin(order.user, order.value);
 					}
 					else{
 						t1.transfer(order.user, order.value);
@@ -272,10 +278,10 @@ library TradeCoinsLib {
 
 		Order memory order=tradeCoins.getOrder(orderID);
 
-		uint chgValue=value*tradeCoins.cnPriceStd()/order.price;//Àu¥ı¥H­q³æªº»ù®æ¬°¥D
+		uint chgValue=value*tradeCoins.cnPriceStd()/order.price;//å„ªå…ˆä»¥è¨‚å–®çš„åƒ¹æ ¼ç‚ºä¸»
 		if(chgValue>=order.value){
 			if(tokenAddr2==tradeCoins.cnOrgCoin() ){
-				payable(msg.sender).transfer(order.value);
+				sendOrgCoin(msg.sender, order.value);
 			}
 			else{
 				t2.transfer(msg.sender, order.value);
@@ -286,7 +292,7 @@ library TradeCoinsLib {
 			uint subValue=order.value*order.price/tradeCoins.cnPriceStd();
 
 			if(tokenAddr1==tradeCoins.cnOrgCoin() ){
-				payable(order.user).transfer(subValue);
+				sendOrgCoin(order.user, subValue);
 			}
 			else{
 				t1.transfer(order.user, subValue);
@@ -306,7 +312,7 @@ library TradeCoinsLib {
 			uint subValue=chgValue;
 
 			if(tokenAddr2==tradeCoins.cnOrgCoin() ){
-				payable(msg.sender).transfer(subValue);
+				sendOrgCoin(msg.sender, subValue);
 			}
 			else{
 				t2.transfer(msg.sender, subValue);
@@ -318,7 +324,7 @@ library TradeCoinsLib {
 			tradeCoins.decPriceAmount(order.pairID, order.price, subValue);
 			
 			if(tokenAddr1==tradeCoins.cnOrgCoin() ){
-				payable(order.user).transfer(value);
+				sendOrgCoin(order.user, value);
 			}
 			else{
 				t1.transfer(order.user, value);
@@ -333,9 +339,9 @@ library TradeCoinsLib {
 
 			
 			if(isEndOrder){
-				if(order.value>0){//§C©ó³Ì¤p¥i¥æ©ö­È¡A§â³Ñ¤UvalueÁÙµ¹¨Ï¥ÎªÌ
+				if(order.value>0){//ä½æ–¼æœ€å°å¯äº¤æ˜“å€¼ï¼ŒæŠŠå‰©ä¸‹valueé‚„çµ¦ä½¿ç”¨è€…
 					if(tokenAddr2==tradeCoins.cnOrgCoin() ){
-						payable(order.user).transfer(order.value);
+						sendOrgCoin(order.user, order.value);
 					}
 					else{
 						t2.transfer(order.user, order.value);
@@ -442,7 +448,7 @@ contract TradeCoins {
 
 	constructor() {
 		founderAddr=msg.sender;
-		cnOrgCoin=address(this);//¥H³o­Ó¦X¬ùªº¦ì§}·í§@­ì¥Í¥N¹ôªº¦ì§}
+		cnOrgCoin=address(this);//ä»¥é€™å€‹åˆç´„çš„ä½å€ç•¶ä½œåŸç”Ÿä»£å¹£çš„ä½å€
 	}
 	
 	function setTokenPair(uint32 pairID, address tokenAddr1, address tokenAddr2) public {
@@ -493,10 +499,10 @@ contract TradeCoins {
 	uint orderNum=0;
 	uint constant public cnPriceStd=10**18;
 
-	bool isLibCall=false;//¬°¤FÅıTradeCoinsLib¤è«K¦s¨úTradeCoins¤¤ªºÅÜ¼Æ
-						 //¥Îrequire(isLibCall)¨Ó­­¨î¬Y¨Çexternal¨ç¼Æ¥u¯àÅıTradeCoinsLib¨Ï¥Î
+	bool isLibCall=false;//ç‚ºäº†è®“TradeCoinsLibæ–¹ä¾¿å­˜å–TradeCoinsä¸­çš„è®Šæ•¸
+						 //ç”¨require(isLibCall)ä¾†é™åˆ¶æŸäº›externalå‡½æ•¸åªèƒ½è®“TradeCoinsLibä½¿ç”¨
 
-	//»İ­n§âlibrary¤¤ªºevent©ñ¨ìcontract¤¤¤~¯à¦bABI¤¤¥X²{
+	//éœ€è¦æŠŠlibraryä¸­çš„eventæ”¾åˆ°contractä¸­æ‰èƒ½åœ¨ABIä¸­å‡ºç¾
 	event Trade(uint time, TradeType tradeType,
 			address indexed buyUser, address indexed sellUser, uint32 indexed pairID, uint price,
 			uint buyValue, uint sellValue, uint orderID, bool isEndOrder);
@@ -557,7 +563,7 @@ contract TradeCoins {
 		if(tokenAddr2==cnOrgCoin){
 			require(msg.value>0);
 
-			value=msg.value;//¥Hmsg.value¬°¥D
+			value=msg.value;//ä»¥msg.valueç‚ºä¸»
 		}
 		else{
 			t2.transferFrom(msg.sender, address(this), value);
@@ -570,7 +576,7 @@ contract TradeCoins {
 
 
 		/////////////////////////////////////////////
-		//´M§ä²{¦³¤Ç°tªº³æ¤l
+		//å°‹æ‰¾ç¾æœ‰åŒ¹é…çš„å–®å­
 		PriceTree storage priceTree;
 		OrderTree storage orderTree;
 
@@ -621,7 +627,7 @@ contract TradeCoins {
 		if(value==0){
 			return;
 		}
-		if(!isOrder || value*price/cnPriceStd==0){//¥«»ù³æ§ä¤£¨ì­q³æ©Î¬O§C©ó³Ì¤p¥i¥æ©ö­È¡A§â³Ñ¤UvalueÁÙµ¹¨Ï¥ÎªÌ
+		if(!isOrder || value*price/cnPriceStd==0){//å¸‚åƒ¹å–®æ‰¾ä¸åˆ°è¨‚å–®æˆ–æ˜¯ä½æ–¼æœ€å°å¯äº¤æ˜“å€¼ï¼ŒæŠŠå‰©ä¸‹valueé‚„çµ¦ä½¿ç”¨è€…
 			if(tokenAddr2==cnOrgCoin){
 				payable(msg.sender).transfer(value);
 			}
@@ -663,7 +669,7 @@ contract TradeCoins {
 		return value;
 	}
 
-	//¥«»ù³æ«h³]price=0
+	//å¸‚åƒ¹å–®å‰‡è¨­price=0
 	function buy(uint32 pairID, uint price, uint value, bool isOrder) public payable {
 		require(pairID<tokenPairNum && value>0);
 
@@ -676,7 +682,7 @@ contract TradeCoins {
 		if(tokenAddr1==cnOrgCoin){
 			require(msg.value>0);
 
-			value=msg.value;//¥Hmsg.value¬°¥D
+			value=msg.value;//ä»¥msg.valueç‚ºä¸»
 		}
 		else{
 			t1.transferFrom(msg.sender, address(this), value);
@@ -688,7 +694,7 @@ contract TradeCoins {
 		TradeCoinsLib.eventTransfer(pairID, true, msg.sender, address(this), value);
 
 		/////////////////////////////////////////////
-		//´M§ä²{¦³¤Ç°tªº³æ¤l
+		//å°‹æ‰¾ç¾æœ‰åŒ¹é…çš„å–®å­
 		PriceTree storage priceTree;
 		OrderTree storage orderTree;
 
@@ -738,7 +744,7 @@ contract TradeCoins {
 		if(value==0){
 			return;
 		}
-		if(!isOrder || value*cnPriceStd/price==0){//¥«»ù³æ§ä¤£¨ì­q³æ©Î¬O§C©ó³Ì¤p¥i¥æ©ö­È¡A§â³Ñ¤UvalueÁÙµ¹¨Ï¥ÎªÌ
+		if(!isOrder || value*cnPriceStd/price==0){//å¸‚åƒ¹å–®æ‰¾ä¸åˆ°è¨‚å–®æˆ–æ˜¯ä½æ–¼æœ€å°å¯äº¤æ˜“å€¼ï¼ŒæŠŠå‰©ä¸‹valueé‚„çµ¦ä½¿ç”¨è€…
 			if(tokenAddr1==cnOrgCoin){
 				payable(msg.sender).transfer(value);
 			}
