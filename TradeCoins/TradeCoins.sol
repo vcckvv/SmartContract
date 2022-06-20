@@ -173,7 +173,7 @@ library TradeCoinsLib {
 			isToken1 ? value : 0, isToken1 ? 0 : value, 0, false);
 	}
 	
-	function sendOrgCoin(address addr, uint value) public {
+	function sendOrgCoin(address addr, uint value) internal {
 		if(payable(addr).send(value)==false){
 			//遇到特殊合約可能出錯，這裡跳過錯誤，避免單子沒辦法被吃掉而卡住
 		}
