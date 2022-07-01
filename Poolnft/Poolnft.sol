@@ -77,10 +77,10 @@ struct NFTData{
 
 struct AuctionData{
 	bool isActive;
-	uint endTime;//©ç½æµ²§ô®É¶¡
-	uint directPrice;//ª½ÁÊ»ù
-	uint nowPrice;//¥Ø«e©ç½æ»ù
-	address bidder;//¥Ø«e¥X»ù¤H
+	uint endTime;//æ‹è³£çµæŸæ™‚é–“
+	uint directPrice;//ç›´è³¼åƒ¹
+	uint nowPrice;//ç›®å‰æ‹è³£åƒ¹
+	address bidder;//ç›®å‰å‡ºåƒ¹äºº
 }
 
 enum LogType{
@@ -96,7 +96,7 @@ struct LogData{
 
 	uint endTime;
 	uint directPrice;
-	uint nowPrice;//bidPrice¡BsendValue
+	uint nowPrice;//bidPriceã€sendValue
 
 	uint time;
 }
@@ -209,7 +209,7 @@ library PoolnftLib{
 
 	function sendOrgCoin(address addr, uint value) public {
 		if(payable(addr).send(value)==false){
-			//¹J¨ì¯S®í¦X¬ù¥i¯à¥X¿ù¡A³o¸Ì¸õ¹L¿ù»~¡AÁ×§K³Q¥d¦í
+			//é‡åˆ°ç‰¹æ®Šåˆç´„å¯èƒ½å‡ºéŒ¯ï¼Œé€™è£¡è·³éŽéŒ¯èª¤ï¼Œé¿å…è¢«å¡ä½
 			sendLog(addr, value, true);
 		}
 		else{
@@ -250,7 +250,8 @@ library PoolnftLib{
 			Poolnft poolnft) external {
 
 		require(poolnft.isToken(tokenID) );
-		require(poolnft.ownerOf(tokenID)==msg.sender && directPrice>0 && nowPrice>0 && directPrice>=nowPrice);
+		require(!auctionMap[tokenID].isActive && poolnft.ownerOf(tokenID)==msg.sender &&
+			directPrice>0 && nowPrice>0 && directPrice>=nowPrice);
 
 		auctionMap[tokenID]=AuctionData(true, endTime, directPrice, nowPrice, address(0) );
 		userAuctionMap[msg.sender].insert(tokenID);
@@ -293,7 +294,7 @@ library PoolnftLib{
 
 		address owner=poolnft.ownerOf(tokenID);
 
-		if(msg.value>=data.directPrice){//®É¶¡¹L¤F¤]¥i¥H¥Îª½ÁÊ»ù¶R
+		if(msg.value>=data.directPrice){//æ™‚é–“éŽäº†ä¹Ÿå¯ä»¥ç”¨ç›´è³¼åƒ¹è²·
 			if(data.bidder!=address(0) ){
 				sendOrgCoin(data.bidder, data.nowPrice);
 				poolnft.setBidBalance(poolnft.bidBalance()-data.nowPrice);
@@ -368,12 +369,12 @@ contract Poolnft is ERC721, IERC721Enumerable {
  
 	constructor() ERC721("Poolnft", "NFT") {
 		founderAddr=msg.sender;
-		nftSaveAr.push();//¶ë¤J¤@­ÓªÅ¸ê®Æ¡AÅýID±q1¶}©l¡A¦]¬°IDTree¤£±µ¨ü0
+		nftSaveAr.push();//å¡žå…¥ä¸€å€‹ç©ºè³‡æ–™ï¼Œè®“IDå¾ž1é–‹å§‹ï¼Œå› ç‚ºIDTreeä¸æŽ¥å—0
 	}
 
 	function mint(string memory uri, string memory title, uint hash) public {
 		require(bytes(uri).length > 0);
-		require(bytes(title).length>0 && bytes(title).length <= 60*3);//¤@­Ó¤¤¤å¦r¤@¯ë3­Óbytes
+		require(bytes(title).length>0 && bytes(title).length <= 60*3);//ä¸€å€‹ä¸­æ–‡å­—ä¸€èˆ¬3å€‹bytes
 
 		uint id=nftSaveAr.length;
 		_mint(msg.sender, id);
@@ -381,13 +382,13 @@ contract Poolnft is ERC721, IERC721Enumerable {
 		nftSaveAr.push(NFTSave(uri, msg.sender, title, hash) );
 
 		createMap[msg.sender].push(id);
-		//ownMap[msg.sender].insert(id);¦b_safeMint¤¤ªº_beforeTokenTransfer¤w°µ
+		//ownMap[msg.sender].insert(id);åœ¨_safeMintä¸­çš„_beforeTokenTransferå·²åš
 	}
 	
 	function testMassMint(string memory uri, string memory title, uint hash, uint count) public {
 		require(msg.sender==founderAddr);
 		require(bytes(uri).length > 0);
-		require(bytes(title).length>0 && bytes(title).length <= 60*3);//¤@­Ó¤¤¤å¦r¤@¯ë3­Óbytes
+		require(bytes(title).length>0 && bytes(title).length <= 60*3);//ä¸€å€‹ä¸­æ–‡å­—ä¸€èˆ¬3å€‹bytes
 
 		NFTSave memory save=NFTSave(uri, msg.sender, title, hash);
 
@@ -407,7 +408,7 @@ contract Poolnft is ERC721, IERC721Enumerable {
 
 	function changeURI(uint tokenID, string memory uri) public {
 		require(isToken(tokenID) );
-		require(nftSaveAr[tokenID].creator==msg.sender || ownerOf(tokenID)==msg.sender);//¾Ö¦³ªÌ©Î³Ð§@ªÌ¤~¯à§ï
+		require(nftSaveAr[tokenID].creator==msg.sender || ownerOf(tokenID)==msg.sender);//æ“æœ‰è€…æˆ–å‰µä½œè€…æ‰èƒ½æ”¹
 
 		nftSaveAr[tokenID].uri=uri;
 	}
@@ -514,7 +515,7 @@ contract Poolnft is ERC721, IERC721Enumerable {
 
 	function setName(string memory name) public {
 		require(nameUseMap[name]==address(0) );
-		require(bytes(name).length>0 && bytes(name).length<60*3);//¤@­Ó¤¤¤å¦r¤@¯ë3­Óbytes
+		require(bytes(name).length>0 && bytes(name).length<60*3);//ä¸€å€‹ä¸­æ–‡å­—ä¸€èˆ¬3å€‹bytes
 
 		string memory oldName=addrNameMap[msg.sender];
 		if(bytes(oldName).length!=0){
@@ -535,7 +536,7 @@ contract Poolnft is ERC721, IERC721Enumerable {
 
 	function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal override(ERC721) {
 		
-		require(!auctionMap[tokenId].isActive);//©ç½æ®É¤£¯àÂà²¾
+		require(!auctionMap[tokenId].isActive);//æ‹è³£æ™‚ä¸èƒ½è½‰ç§»
 		
 		super._beforeTokenTransfer(from, to, tokenId);
 		
