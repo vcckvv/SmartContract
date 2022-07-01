@@ -488,7 +488,7 @@ function toTimestamp(year, mon, day, hour, min, sec){
 }
 
 function toSafeUrl(url){
-	return url.replace(/</g, "%3C").replace(/>/g, "%3E");
+	return url.replace(/</g, "%3C").replace(/>/g, "%3E").replace(/'/g, "%27").replace(/"/g, "%22");
 }
 
 function toSafeText(str){
