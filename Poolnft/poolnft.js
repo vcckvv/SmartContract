@@ -1,5 +1,5 @@
 ﻿if(typeof window.ethereum === "undefined"){
-	alert("error : 尚未安裝MetaMask，此網夏需要安裝MetaMask才能使用");
+	alert("error : 尚未安裝MetaMask，此網頁需要安裝MetaMask才能使用");
 	throw new Error();
 }
 
