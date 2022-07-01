@@ -20,7 +20,7 @@
 		描述：<br><textarea id="newDesc" rows="5" cols="72"  maxlength="1000" ></textarea><br><br>
 		圖片網址：<input id="newImgUrl" size="59" onkeyup="showNewImg()" /><br><br>
 		(盡量選擇網頁空間來上傳圖片，比如Github，其次則是選擇不會改變圖片資料、不刪檔、無流量限制的圖床網站來上傳圖片)<br>
-		(如果沒有顯示預覽圖，或是沒得到和儲存資料相同的hash，則代表圖片網址有問題)<br><br>
+		(如果沒有顯示預覽圖，或是沒顯示hash，則代表圖片網址有問題)<br><br>
 		預覽圖：<br><br>
 		<img src=""  id="newImg" />
 		圖片hash：<br><span id="newHash" ></span><br><br>
@@ -145,7 +145,7 @@ async function mintNFT(){
 	let uri="data:application/json;base64," + btoa(Utf8Encode(jsonStr) );
 	
 	try{
-		let tx = await contractSigner.mint(uri, newTitle.value, "0x"+newHash.innerHTML );
+		let tx = await contractSigner.mint(uri, newTitleStr, "0x"+newHash.innerHTML );
 		
 		await tx.wait();
 		
