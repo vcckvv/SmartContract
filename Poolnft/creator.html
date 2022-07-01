@@ -1,1 +1,144 @@
-creator
+﻿<html>
+<head> 
+	<title>Poolnft</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="poolnft.css">
+</head>
+<body align="center">
+	<a href="index.html" class="header">Poolnft</a>
+	<hr>
+	<table align="center">
+		<tr align="left"><td>帳號位址：<input id="userAddrInput" size="42" readonly /></td></tr>
+		<tr align="left" style="display:none"><td>　　餘額：<input id="balanceInput" size="42" readonly /></td></tr>
+	</table>
+	<hr>
+	<div class="subheader" >尋找某人鑄造的NFT列表</div>
+	<div class="block"><p>
+		鑄造者帳號位址：</td><td><input id="inputAddr" size="42" /> <button onClick="findAddr()">尋找位址</button><br>
+		　鑄造者的名字：</td><td><input id="inputName" size="42" /> <button onClick="findName()">尋找名字</button><br>
+	</p></div><br>
+	<div id="nftList">
+		<div  name="nft" style="display:none">
+			<div class="dataBlock"><p>
+				<div class="imgBlock" onclick="window.open('https://vcckvv.github.io/SmartContract/TestToken/icon.png')" name="imgLink">
+					<img src="https://vcckvv.github.io/SmartContract/TestToken/icon.png"  name="img" />
+				</div>
+				<p class="imgTitle"><a href="view.html?1" target="_blank" name="title">1.「標題」</a></p>
+				<p class="imgTitle" name="onAuction">(拍賣中！)</p>
+			</p></div>
+			<br>
+		</div>
+	</div>
+	<hr>
+	<div id="pageList" align="center">
+	</div>
+</body>
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script src="poolnft.js"></script>
+<script>
+
+const pageSize=20;//一頁放多少NFT
+let nftCount = 0;
+let pageCount = 0;
+let nowPage = 0;
+
+let inputAddr=document.getElementById("inputAddr");
+let inputName=document.getElementById("inputName");
+
+let nftList=document.getElementById("nftList");
+let pageList=document.getElementById("pageList");
+
+let blockStr=nftList.innerHTML;
+let allBlockStr=blockStr;
+for(let i=0; i<pageSize-1; i++){
+	allBlockStr+=blockStr;
+}
+nftList.innerHTML=allBlockStr;
+
+let nfts=document.getElementsByName("nft");
+for(let i=0; i<pageSize ; i++){
+	nfts[i].style.display="none";
+}
+
+let imgLinks=document.getElementsByName("imgLink");
+let imgs=document.getElementsByName("img");
+let titles=document.getElementsByName("title");
+let onAuctions=document.getElementsByName("onAuction");
+
+async function initPage(){
+	
+	if(location.search==""){
+		return;
+	}
+	else if(/^\?0x[\da-fA-F]{40}$/.test(location.search)==false){
+		alert("error : 網址非正確參數連結！");
+		return;
+	}
+	
+	listAddr=location.search.substring(1);
+	if(!utils.isAddress(listAddr) ){
+		alert("error : 尋找位址非正確格式的地址");
+		return;
+	}
+	
+	try{
+		inputAddr.value=listAddr;
+		inputName.value=await contract.getName(listAddr);
+		
+		find();
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function findAddr(){
+	listAddr=inputAddr.value;
+	if(!utils.isAddress(listAddr) ){
+		alert("error : 尋找位址非正確格式的地址");
+		return;
+	}
+	
+	try{
+		inputName.value=await contract.getName(listAddr);
+		
+		find();
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function findName(){
+	try{
+		listAddr=await contract.getNameAddr(inputName.value);
+		if(addrEq(listAddr, zeroAddr) ){
+			alert("error : 此名字無人使用");
+			return;
+		}
+		inputAddr.value=listAddr;
+		
+		find();
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function find(){
+	
+	window.history.replaceState( {} , "Poolnft", "creator.html?" + listAddr );
+	
+	try{
+		nftCount = await contract.getCreateCount(listAddr);
+		pageCount = Math.ceil(nftCount/pageSize);
+		if(pageCount==0){
+			pageCount=1;
+		}
+		
+		listType="create";
+		showNFTList(0);
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+</script>
+</html>

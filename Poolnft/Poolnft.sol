@@ -63,6 +63,7 @@ struct NFTSave{
 }
 
 struct NFTData{
+	uint id;
 	string uri;
 	address creator;
 	string creatorName;
@@ -76,10 +77,10 @@ struct NFTData{
 
 struct AuctionData{
 	bool isActive;
-	uint endTime;//æ‹è³£çµæŸæ™‚é–“
-	uint directPrice;//ç›´è³¼åƒ¹
-	uint nowPrice;//ç›®å‰æ‹è³£åƒ¹
-	address bidder;//ç›®å‰å‡ºåƒ¹äºº
+	uint endTime;//©ç½æµ²§ô®É¶¡
+	uint directPrice;//ª½ÁÊ»ù
+	uint nowPrice;//¥Ø«e©ç½æ»ù
+	address bidder;//¥Ø«e¥X»ù¤H
 }
 
 enum LogType{
@@ -95,7 +96,7 @@ struct LogData{
 
 	uint endTime;
 	uint directPrice;
-	uint nowPrice;//bidPriceã€sendValue
+	uint nowPrice;//bidPrice¡BsendValue
 
 	uint time;
 }
@@ -132,6 +133,7 @@ library PoolnftLib{
 
 		require(poolnft.isToken(tokenID) );
 
+		data.id=tokenID;
 		data.uri=nftSaveAr[tokenID].uri;
 
 		data.creator=nftSaveAr[tokenID].creator;
@@ -162,6 +164,7 @@ library PoolnftLib{
 			
 			require(poolnft.isToken(tokenID) );
 
+			dataAr[i].id=tokenID;
 			dataAr[i].uri=nftSaveAr[tokenID].uri;
 
 			dataAr[i].creator=nftSaveAr[tokenID].creator;
@@ -206,7 +209,7 @@ library PoolnftLib{
 
 	function sendOrgCoin(address addr, uint value) public {
 		if(payable(addr).send(value)==false){
-			//é‡åˆ°ç‰¹æ®Šåˆç´„å¯èƒ½å‡ºéŒ¯ï¼Œé€™è£¡è·³éŽéŒ¯èª¤ï¼Œé¿å…è¢«å¡ä½
+			//¹J¨ì¯S®í¦X¬ù¥i¯à¥X¿ù¡A³o¸Ì¸õ¹L¿ù»~¡AÁ×§K³Q¥d¦í
 			sendLog(addr, value, true);
 		}
 		else{
@@ -290,7 +293,7 @@ library PoolnftLib{
 
 		address owner=poolnft.ownerOf(tokenID);
 
-		if(msg.value>=data.directPrice){//æ™‚é–“éŽäº†ä¹Ÿå¯ä»¥ç”¨ç›´è³¼åƒ¹è²·
+		if(msg.value>=data.directPrice){//®É¶¡¹L¤F¤]¥i¥H¥Îª½ÁÊ»ù¶R
 			if(data.bidder!=address(0) ){
 				sendOrgCoin(data.bidder, data.nowPrice);
 				poolnft.setBidBalance(poolnft.bidBalance()-data.nowPrice);
@@ -361,37 +364,37 @@ contract Poolnft is ERC721, IERC721Enumerable {
 
 	mapping(address => string) addrNameMap;
 	mapping(string => address) nameUseMap;
-
+	
  
 	constructor() ERC721("Poolnft", "NFT") {
 		founderAddr=msg.sender;
-		nftSaveAr.push();//å¡žå…¥ä¸€å€‹ç©ºè³‡æ–™ï¼Œè®“IDå¾ž1é–‹å§‹ï¼Œå› ç‚ºIDTreeä¸æŽ¥å—0
+		nftSaveAr.push();//¶ë¤J¤@­ÓªÅ¸ê®Æ¡AÅýID±q1¶}©l¡A¦]¬°IDTree¤£±µ¨ü0
 	}
-	
+
 	function mint(string memory uri, string memory title, uint hash) public {
 		require(bytes(uri).length > 0);
-		require(bytes(title).length>0 && bytes(title).length <= 60*3);//ä¸€å€‹ä¸­æ–‡å­—ä¸€èˆ¬3å€‹bytes
+		require(bytes(title).length>0 && bytes(title).length <= 60*3);//¤@­Ó¤¤¤å¦r¤@¯ë3­Óbytes
 
 		uint id=nftSaveAr.length;
-		_safeMint(msg.sender, id);
+		_mint(msg.sender, id);
 
 		nftSaveAr.push(NFTSave(uri, msg.sender, title, hash) );
 
 		createMap[msg.sender].push(id);
-		//ownMap[msg.sender].insert(id);åœ¨_safeMintä¸­çš„_beforeTokenTransferå·²åš
+		//ownMap[msg.sender].insert(id);¦b_safeMint¤¤ªº_beforeTokenTransfer¤w°µ
 	}
 	
 	function testMassMint(string memory uri, string memory title, uint hash, uint count) public {
 		require(msg.sender==founderAddr);
 		require(bytes(uri).length > 0);
-		require(bytes(title).length>0 && bytes(title).length <= 60*3);//ä¸€å€‹ä¸­æ–‡å­—ä¸€èˆ¬3å€‹bytes
+		require(bytes(title).length>0 && bytes(title).length <= 60*3);//¤@­Ó¤¤¤å¦r¤@¯ë3­Óbytes
 
 		NFTSave memory save=NFTSave(uri, msg.sender, title, hash);
 
 		for(uint i=0; i<count; i++){
 
 			uint id=nftSaveAr.length;
-			_safeMint(msg.sender, id);
+			_mint(msg.sender, id);
 
 			nftSaveAr.push(save);
 			createMap[msg.sender].push(id);
@@ -404,7 +407,7 @@ contract Poolnft is ERC721, IERC721Enumerable {
 
 	function changeURI(uint tokenID, string memory uri) public {
 		require(isToken(tokenID) );
-		require(nftSaveAr[tokenID].creator==msg.sender || ownerOf(tokenID)==msg.sender);//æ“æœ‰è€…æˆ–å‰µä½œè€…æ‰èƒ½æ”¹
+		require(nftSaveAr[tokenID].creator==msg.sender || ownerOf(tokenID)==msg.sender);//¾Ö¦³ªÌ©Î³Ð§@ªÌ¤~¯à§ï
 
 		nftSaveAr[tokenID].uri=uri;
 	}
@@ -511,7 +514,7 @@ contract Poolnft is ERC721, IERC721Enumerable {
 
 	function setName(string memory name) public {
 		require(nameUseMap[name]==address(0) );
-		require(bytes(name).length>0 && bytes(name).length<60*3);//ä¸€å€‹ä¸­æ–‡å­—ä¸€èˆ¬3å€‹bytes
+		require(bytes(name).length>0 && bytes(name).length<60*3);//¤@­Ó¤¤¤å¦r¤@¯ë3­Óbytes
 
 		string memory oldName=addrNameMap[msg.sender];
 		if(bytes(oldName).length!=0){
@@ -532,7 +535,7 @@ contract Poolnft is ERC721, IERC721Enumerable {
 
 	function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal override(ERC721) {
 		
-		require(!auctionMap[tokenId].isActive);//æ‹è³£æ™‚ä¸èƒ½è½‰ç§»
+		require(!auctionMap[tokenId].isActive);//©ç½æ®É¤£¯àÂà²¾
 		
 		super._beforeTokenTransfer(from, to, tokenId);
 		
@@ -579,22 +582,26 @@ contract Poolnft is ERC721, IERC721Enumerable {
 	}
 
 	function startAuction(uint tokenID, uint endTime, uint directPrice, uint nowPrice) public {
+
 		PoolnftLib.startAuction(tokenID, endTime, directPrice, nowPrice, auctionMap, userAuctionMap, this);
 	}
 
 	function stopAuction(uint tokenID) public {
+
 		isLibCall=true;
 		PoolnftLib.stopAuction(tokenID, auctionMap, userAuctionMap, this);
 		isLibCall=false;
 	}
 
 	function bid(uint tokenID) public payable {
+
 		isLibCall=true;
 		PoolnftLib.bid(tokenID, auctionMap, userAuctionMap, this);
 		isLibCall=false;
 	}
 
 	function bidEnd(uint tokenID) public {
+
 		isLibCall=true;
 		PoolnftLib.bidEnd(tokenID, auctionMap, userAuctionMap, this);
 		isLibCall=false;

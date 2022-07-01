@@ -1,1 +1,103 @@
-toolnft
+﻿<html>
+<head> 
+	<title>Poolnft</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="poolnft.css">
+</head>
+<body align="center">
+	<a href="index.html" class="header">Poolnft</a>
+	<hr>
+	<table align="center">
+		<tr align="left"><td>帳號位址：<input id="userAddrInput" size="42" readonly /></td></tr>
+		<tr align="left" style="display:none"><td>　　餘額：<input id="balanceInput" size="42" readonly /></td></tr>
+	</table>
+	<hr>
+	<div class="block">
+		<div class="dataBlock"><p>
+			網頁目錄：<br><br>
+			<a href="all.html" target="_blank">全部的NFT列表</a><br><br>
+			<a href="own.html" target="_blank">某人擁有的NFT列表</a><br><br>
+			<a href="creator.html" target="_blank">某人鑄造的NFT列表</a><br><br>
+			<a id="myCreatorLink" href="creator.html" target="_blank">此帳號鑄造的NFT列表</a><br><br>
+			<a href="auction.html" target="_blank">某人拍賣的NFT列表</a><br><br>
+			<a id="myAuctionLink" href="auction.html" target="_blank">此帳號拍賣的NFT列表</a><br><br>
+			<a href="bid.html" target="_blank">某人投標的NFT列表</a><br><br>
+			<a id="myBidLink" href="bid.html" target="_blank">此帳號投標的NFT列表</a><br><br>
+			<a href="mint.html" target="_blank">鑄造新的NFT</a><br><br>
+			<a href="name.html" target="_blank">設定帳號的名字</a><br><br>
+			<a href="log.html" target="_blank">Log記錄</a><br><br>
+			<a href="https://mumbaifaucet.com/"  target="_blank">mumbai水龍頭網站</a><br><br>
+		</p></div>
+	</div>
+	<div class="subheader">此帳號擁有的NFT列表</div>
+	<div id="nftList">
+		<div  name="nft" style="display:none">
+			<div class="dataBlock"><p>
+				<div class="imgBlock" onclick="window.open('https://vcckvv.github.io/SmartContract/TestToken/icon.png')" name="imgLink">
+					<img src="https://vcckvv.github.io/SmartContract/TestToken/icon.png"  name="img" />
+				</div>
+				<p class="imgTitle"><a href="view.html?1" target="_blank" name="title">1.「標題」</a></p>
+				<p class="imgTitle" name="onAuction">(拍賣中！)</p>
+			</p></div>
+			<br>
+		</div>
+	</div>
+	<hr>
+	<div id="pageList" align="center">
+	</div>
+</body>
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script src="poolnft.js"></script>
+<script>
+
+const pageSize=20;//一頁放多少NFT
+let nftCount = 0;
+let pageCount = 0;
+let nowPage = 0;
+
+let myCreatorLink=document.getElementById("myCreatorLink");
+let myAuctionLink=document.getElementById("myAuctionLink");
+let myBidLink=document.getElementById("myBidLink");
+
+let nftList=document.getElementById("nftList");
+let pageList=document.getElementById("pageList");
+
+let blockStr=nftList.innerHTML;
+let allBlockStr=blockStr;
+for(let i=0; i<pageSize-1; i++){
+	allBlockStr+=blockStr;
+}
+nftList.innerHTML=allBlockStr;
+
+let nfts=document.getElementsByName("nft");
+for(let i=0; i<pageSize ; i++){
+	nfts[i].style.display="none";
+}
+
+let imgLinks=document.getElementsByName("imgLink");
+let imgs=document.getElementsByName("img");
+let titles=document.getElementsByName("title");
+let onAuctions=document.getElementsByName("onAuction");
+
+async function initPage(){
+	myCreatorLink.href="creator.html?" + userAddr;
+	myAuctionLink.href="auction.html?" + userAddr;
+	myBidLink.href="bid.html?" + userAddr;
+	
+	try{
+		nftCount = await contract.getOwnCount(userAddr);
+		pageCount = Math.ceil(nftCount/pageSize);
+		if(pageCount==0){
+			pageCount=1;
+		}
+		
+		listType="own";
+		listAddr=userAddr;
+		showNFTList(0);
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+</script>
+</html>

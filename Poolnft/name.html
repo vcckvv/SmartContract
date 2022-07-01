@@ -1,1 +1,66 @@
-name
+﻿<html>
+<head> 
+	<title>Poolnft</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="poolnft.css">
+</head>
+<body align="center">
+	<a href="index.html" class="header">Poolnft</a>
+	<hr>
+	<table align="center">
+		<tr align="left"><td>帳號位址：<input id="userAddrInput" size="42" readonly /></td></tr>
+		<tr align="left"><td>　　餘額：<input id="balanceInput" size="42" readonly /></td></tr>
+	</table>
+	<hr>
+	<div class="subheader">設定帳號的名字</div>
+	<div class="block">
+		<table>
+			<tr align="left"><td>　</td></tr>
+			<tr align="left"><td>名字：<input id="nameInput" size="50" maxlength="60" />　<button onclick="onSetNameBtn()" >設定</button></td></tr>
+			<tr align="left"><td>　</td></tr>
+		</table>
+	</div>
+</body>
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script src="poolnft.js"></script>
+<script>
+	
+let nameInput=document.getElementById("nameInput");
+
+async function initPage(){
+	try{
+		nameInput.value=await contract.getName(userAddr);
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function onSetNameBtn(){
+	try{
+		let newName=nameInput.value;
+		if(newName.length==0){
+			alert("名字不得為空");
+			return;
+		}
+		
+		let useAddr = await contract.getNameAddr(newName);
+		if(!addrEq(useAddr, zeroAddr) ){
+			alert("此名字已被使用！(" + useAddr + ")");
+			return;
+		}
+		
+		let tx = await contractSigner.setName(newName);
+		await tx.wait();
+		updateBalance();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+</script>
+</html>

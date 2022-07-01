@@ -1,1 +1,179 @@
-log
+﻿<html>
+<head> 
+	<title>Poolnft</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="poolnft.css">
+</head>
+<body align="center">
+	<a href="index.html" class="header">Poolnft</a>
+	<hr>
+	<table align="center">
+		<tr align="left"><td>帳號位址：<input id="userAddrInput" size="42" readonly /></td></tr>
+		<tr align="left" style="display:none"><td>　　餘額：<input id="balanceInput" size="42" readonly /></td></tr>
+	</table>
+	<hr>
+	<div class="subheader" >Log記錄</div>
+	<div class="block"><p align="left">
+		　搜尋開始區塊：<input id="startBlock" size="20" onkeyup="showStartBlockTime()" /> (<span id="startBlockTime"></span>)<br><br>
+		　搜尋結束區塊：<input id="endBlock" size="20" onkeyup="showEndBlockTime()" /> (<span id="endBlockTime"></span>)<br><br>
+		　<button id="findBtn" onClick="find()">搜尋此時間內的Log記錄</button><br>
+	</p></div><br>
+	<div id="showLogDiv">
+		<!--<div class="dataBlock"><p>
+			Time: 2022/01/01-01:01:01<br>
+			Type: TradeOrder<br>
+			buyUser: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+			sellUser: 0x0000000000000000000000000000000000000000<br>
+			pairID: 0 (ETH-TEST)<br>
+			price: 100 (1.00 TEST/ETH)<br>
+			buyValue: 100 (1.00 ETH)<br>
+			sellValue: 0 (0 TEST)<br>
+			orderID: 1<br>
+			isEndOrder: false<br>
+		</p></div>
+		<div class="blankBlock"></div>
+		<div class="dataBlock"><p>
+			Time: 2022/01/01-01:01:01<br>
+			Type: TradeOrder<br>
+			buyUser: 0x43438b12Abb000a104482aDFF5DD0B991B50A840<br>
+			sellUser: 0x0000000000000000000000000000000000000000<br>
+			pairID: 0 (ETH-TEST)<br>
+			price: 100 (1.00 TEST/ETH)<br>
+			buyValue: 100 (1.00 ETH)<br>
+			sellValue: 0 (0 TEST)<br>
+			orderID: 1<br>
+			isEndOrder: false<br>
+		</p></div>-->
+	</div>
+</body>
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script src="poolnft.js"></script>
+<script>
+
+let startBlock=document.getElementById("startBlock");
+let endBlock=document.getElementById("endBlock");
+
+let startBlockTime=document.getElementById("startBlockTime");
+let endBlockTime=document.getElementById("endBlockTime");
+
+let showLogDiv=document.getElementById("showLogDiv");
+
+let findBtn=document.getElementById("findBtn");
+
+async function initPage(){
+	
+	try{
+		let nowBlockNum = await provider.getBlockNumber();
+		startBlock.value=nowBlockNum - Math.floor(24*60*60/6);//假設平均區塊時間是6秒
+		endBlock.value=nowBlockNum;
+		
+		await showStartBlockTime();
+		await showEndBlockTime();
+		find();
+	}catch(err){
+		alert(err.message);
+	}
+}
+
+async function find(){
+	let time1=startBlockTime.innerHTML;
+	let time2=endBlockTime.innerHTML;
+	if(time1=="" || time2=="" || time1=="error" || time2=="error"){
+		alert("error : 尚未驗證區塊數是否合法");
+		return;
+	}
+	
+	let startBlockNum=parseInt(startBlock.value);
+	let endBlockNum=parseInt(endBlock.value);
+	
+	if(startBlockNum > endBlockNum){
+		alert("error : 開始區塊數比結束區塊數要更大");
+		return;
+	}
+	
+	showLogDiv.innerHTML="";
+	findBtn.disabled=true;
+	
+	try{
+		let filter = contract.filters.Log();
+		let data = await contract.queryFilter(filter, startBlockNum, endBlockNum);
+		
+		let str="";
+		for(let i=0; i<data.length; i++){
+			str+="<div class='blankBlock'></div><div class='dataBlock'><p>";
+			
+			switch(data[i].args[0]){
+				case 0:{//StartAuction
+					str+="type: StartAuction<br>";
+					
+					str+="owner: " + data[i].args[1] + "<br>";
+					str+="tokenID: " + data[i].args[3] + "<br>";
+					str+="endTime: " + timestampToStr(data[i].args[4]) + "<br>";
+					str+="directPrice: " + utils.formatEther(data[i].args[5]) + "<br>";
+					str+="startPrice: " + utils.formatEther(data[i].args[6]) + "<br>";
+					
+					break;
+				}
+				case 1:{//StopAuction
+					str+="type: StopAuction<br>";
+				
+					str+="owner: " + data[i].args[1] + "<br>";
+					str+="tokenID: " + data[i].args[3] + "<br>";
+					
+					break;
+				}
+				case 2:{//Bid
+					str+="type: Bid<br>";
+				
+					str+="owner: " + data[i].args[1] + "<br>";
+					str+="bidder: " + data[i].args[2] + "<br>";
+					str+="tokenID: " + data[i].args[3] + "<br>";
+					str+="bidPrice: " + utils.formatEther(data[i].args[6]) + "<br>";
+					
+					break;
+				}
+				case 3:{//Trade
+					str+="type: Trade<br>";
+					
+					str+="owner: " + data[i].args[1] + "<br>";
+					str+="bidder: " + data[i].args[2] + "<br>";
+					str+="tokenID: " + data[i].args[3] + "<br>";
+					str+="bidPrice: " + utils.formatEther(data[i].args[6]) + "<br>";
+					
+					break;
+				}
+				case 4:{//Send
+					str+="type: Send<br>";
+					
+					str+="toAddr: " + data[i].args[2] + "<br>";
+					str+="sendValue: " + utils.formatEther(data[i].args[6]) + "<br>";
+					
+					break;
+				}
+				case 5:{//SendFail
+					str+="type: SendFail<br>";
+					
+					str+="toAddr: " + data[i].args[2] + "<br>";
+					str+="sendValue: " + utils.formatEther(data[i].args[6]) + "<br>";
+					
+					break;
+				}
+				default:{
+					alert("log type error - " + data[i].args[1]);
+				}
+			}
+			
+			str+="time: " + timestampToStr(data[i].args[7]) + "<br>";
+			str+="</p></div>";
+		}
+		
+		showLogDiv.innerHTML=str;
+	}catch(err){
+		alert(err.message);
+	}
+	
+	findBtn.disabled=false;
+}
+
+</script>
+</html>

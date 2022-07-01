@@ -1,1 +1,168 @@
-mint
+﻿<html>
+<head> 
+	<title>Poolnft</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="poolnft.css">
+</head>
+<body align="center">
+	<a href="index.html" class="header">Poolnft</a>
+	<hr>
+	<table align="center">
+		<tr align="left"><td>帳號位址：<input id="userAddrInput" size="42" readonly /></td></tr>
+		<tr align="left"><td>　　餘額：<input id="balanceInput" size="42" readonly /></td></tr>
+	</table>
+	<hr>
+	<div class="subheader">鑄造新的NFT</div>
+	
+	<div class="dataBlock" ><p>
+		設定JSON資料：<br><br>
+		標題：<input id="newTitle" size="63" maxlength="60" /><br><br>
+		描述：<br><textarea id="newDesc" rows="5" cols="72"  maxlength="1000" ></textarea><br><br>
+		圖片網址：<input id="newImgUrl" size="59" onkeyup="showNewImg()" /><br><br>
+		(盡量選擇網頁空間來上傳圖片，比如Github，其次則是選擇不會改變圖片資料、不刪檔、無流量限制的圖床網站來上傳圖片)<br>
+		(如果沒有顯示預覽圖，或是沒得到和儲存資料相同的hash，則代表圖片網址有問題)<br><br>
+		預覽圖：<br><br>
+		<img src=""  id="newImg" />
+		圖片hash：<br><span id="newHash" ></span><br><br>
+		<button onclick="mintNFT()">鑄造</button><br>
+	</p></div><br>
+	
+	<div class="dataBlock" id="newNFTDiv" style="display:none"><p>
+		<a href="view.html?" target="_blank" id="newNFTLink" >新鑄造的NFT連結</a>
+	</p></div><br>
+</body>
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script src="poolnft.js"></script>
+<script>
+
+let newTitle=document.getElementById("newTitle");
+let newDesc=document.getElementById("newDesc");
+let newImgUrl=document.getElementById("newImgUrl");
+let newImg=document.getElementById("newImg");
+let newHash=document.getElementById("newHash");
+
+let newNFTDiv=document.getElementById("newNFTDiv");
+let newNFTLink=document.getElementById("newNFTLink");
+
+
+async function initPage(){
+	
+}
+
+function showImgHash(uri){
+	if(/^data:image\/\w+;base64,/.test(uri) ){
+		uri=uri.replace(/^data:image\/\w+;base64,/, "");
+		
+		try{
+			let imgData=atob(uri)
+			
+			var array=new Uint8Array(imgData.length)
+			for(let i=0; i<imgData.length; i++){
+				array[i]=imgData.charCodeAt(i);
+			}
+			
+			let hash=sha256(array);
+			newHash.innerHTML=hash;
+		}
+		catch(err){
+			console.log(err);
+		}
+	}
+	else{
+		loadImgHash(uri);
+	}
+}
+
+async function loadImgHash(url){
+	
+	//以下的方式可能遇到CORS policy問題
+	var xhttp = new XMLHttpRequest();
+	
+	xhttp.onload = function() {
+		if(this.status == 200) {
+			try{
+				var array = new Uint8Array(this.response);
+				
+				let hash=sha256(array);
+				newHash.innerHTML=hash;
+			}
+			catch(err){
+				console.log(err);
+			}
+		}
+	};
+	
+	xhttp.open("GET", url, true);
+	xhttp.responseType="arraybuffer";
+	xhttp.send();
+}
+
+////////////////////////////////////////////////////////////////////
+
+async function showNewImg(){
+	let url=toSafeUrl(newImgUrl.value);
+	newImg.src=url;
+	
+	newHash.innerHTML="";
+	if(/^http(s)?:\/\/.+/.test(url) || /^data:image/.test(url) ){
+		showImgHash(url);
+	}
+}
+
+////////////////////////////////////////////////////////////////////
+
+async function mintNFT(){
+	
+	if(newTitle.value==""){
+		alert("error:請輸入標題");
+		return;
+	}
+	
+	if(newImgUrl.value==""){
+		alert("error:請輸入網址");
+		return;
+	}
+	
+	if(newHash.innerHTML==""){
+		alert("error:無法計算出圖片hash，可能是錯誤的圖片網址或CORS跨網域存取問題");
+		return;
+	}
+	
+	newNFTDiv.style.display="none";
+	
+	let newTitleStr=toJSONText(newTitle.value);
+	let newDescStr=toJSONText(newDesc.value);
+	
+	let jsonStr="";
+	if(newTitle.value!=""){
+		jsonStr+='"name":"' + newTitleStr + '",';
+	}
+	if(newDesc.value!=""){
+		jsonStr+='"description":"' + newDescStr + '",';
+	}
+	jsonStr='{' + jsonStr + '"image":"' + newImgUrl.value + '"}';
+	
+	let uri="data:application/json;base64," + btoa(Utf8Encode(jsonStr) );
+	
+	try{
+		let tx = await contractSigner.mint(uri, newTitleStr, "0x"+newHash.innerHTML );
+		
+		await tx.wait();
+		
+		let createCount=await contract.getCreateCount(userAddr);
+		let data=await contract.getCreateData(userAddr, createCount-1, 1);
+		
+		newNFTLink.href="view.html?" + data[0].id;
+		newNFTDiv.style.display="";
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+</script>
+</html>

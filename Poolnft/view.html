@@ -1,1 +1,629 @@
-view
+﻿<html>
+<head> 
+	<title>Poolnft</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="poolnft.css">
+</head>
+<body align="center">
+	<a href="index.html" class="header">Poolnft</a>
+	<hr>
+	<table align="center">
+		<tr align="left"><td>帳號位址：<input id="userAddrInput" size="42" readonly /></td></tr>
+		<tr align="left"><td>　　餘額：<input id="balanceInput" size="42" readonly /></td></tr>
+	</table>
+	<hr>
+	<div class="subheader">NFT詳細資料</div>
+	
+	<div id="nftDiv" style="display:none"><div class="dataBlock"><p>
+		<div class="imgBlock" onclick="window.open('https://vcckvv.github.io/SmartContract/TestToken/icon.png')" id="imgLink">
+			<img src="https://vcckvv.github.io/SmartContract/TestToken/icon.png"  id="img" />
+		</div>
+		<p class="imgTitle" id="title">1.「標題」</p>
+		創造者：<span id="creatorAddr" >0x0000000000000000000000000000000000000000</span><br>
+		　　　　<span id="creatorName" >(creator)</span><br>
+		擁有者：<span id="ownerAddr" >0x0000000000000000000000000000000000000000</span><br>
+		　　　　<span id="ownerName" >(owner)</span><br>
+		<hr class="dataBlock">
+		JSON標題：<span id="jsonTitle" ></span><br>
+		JSON描述：<br><div id="jsonDesc" class="desc"></div>
+		<hr class="dataBlock">
+		儲存hash：<br><span id="dataHash" ></span><br>
+		實圖hash：<br><span id="realHash" ></span><br>
+	</p></div><br></div>
+	
+	<div id="auctionDiv" style="display:none"><div class="dataBlock"><p>
+		設定拍賣：<br><br>
+		結束時間：<input id="yearInput" size="1" /> 年 <input id="monthInput" size="1" /> 月 <input id="dayInput" size="1" /> 日 <input id="hourInput" size="1" /> 時 
+					  <input id="minInput" size="1" /> 分 <input id="secInput" size="1" /> 秒 <br><br>
+		直購價：<input id="directPriceInput" size="43" /> MATIC<br><br>
+		起標價：<input id="startPriceInput" size="43" /> MATIC<br><br>
+		<button id="startAuctionBtn" onclick="startAuction()">開始拍賣</button><br>
+	</p></div><br></div>
+	
+	<div id="bidDiv" style="display:none"><div class="dataBlock"><p>
+		拍賣狀態：<span id="auctionState">拍賣中</span><br>
+		拍賣結束時間：<span id="endTime">2022年1月1日12時12分12秒</span><br>
+		<hr class="dataBlock">
+		　直購價：<span id="directPrice">0</span> MATIC <button id="directBuyBtn" onclick="directBuy()">直購</button><br>
+		目前標價：<span id="bidPrice">0</span> MATIC<br>
+		目前投標者：<span id="bidderAddr" >0x0000000000000000000000000000000000000000</span><br>
+		<hr class="dataBlock"><br>
+		出價：<input id="bidPriceInput" size="42" /> <button id="bidBtn"  onclick="bid()" disabled >投標</button><br><br>
+		<button id="stopAuctionBtn" onclick="stopAuction()" disabled >終止拍賣</button>
+		<button id="endBidBtn" onclick="endBid()" disabled >完成交易</button><br>
+	</p></div><br></div>
+	
+	<div id="transferDiv" style="display:none"><div class="dataBlock"><p>
+		傳送NFT到此帳號位址：<input id="toAddrInput" size="42" /> <button onclick="transfer()">傳送</button>
+	</p></div><br></div>
+	
+	<div class="dataBlock" id="resetJSONDiv" style="display:none"><p>
+		重設JSON資料：<br><br>
+		標題：<input id="newTitle" size="63" maxlength="60" /><br><br>
+		描述：<br><textarea id="newDesc" rows="5" cols="72"  maxlength="1000" ></textarea><br><br>
+		圖片網址：<input id="newImgUrl" size="59" onkeyup="showNewImg()" /><br><br>
+		(盡量選擇網頁空間來上傳圖片，比如Github，其次則是選擇不會改變圖片資料、不刪檔、無流量限制的圖床網站來上傳圖片)<br>
+		(如果沒有顯示預覽圖，或是沒得到和儲存資料相同的hash，則代表圖片網址有問題)<br><br>
+		預覽圖：<br><br>
+		<img src="https://vcckvv.github.io/SmartContract/TestToken/icon.png"  id="newImg" />
+		儲存hash：<br><span id="dataHash2" ></span><br>
+		圖片hash：<br><span id="newHash" ></span><br><br>
+		<button id="resetJSONBtn" onclick="resetJSON()">重設</button><br>
+	</p></div><br>
+	
+</body>
+<script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"></script>
+<script src="poolnft.js"></script>
+<script>
+	
+let nftID=0;
+
+let nftDiv=document.getElementById("nftDiv");
+let imgLink=document.getElementById("imgLink");
+let img=document.getElementById("img");
+let title=document.getElementById("title");
+
+let creatorAddr=document.getElementById("creatorAddr");
+let creatorName=document.getElementById("creatorName");
+let ownerAddr=document.getElementById("ownerAddr");
+let ownerName=document.getElementById("ownerName");
+
+let jsonTitle=document.getElementById("jsonTitle");
+let jsonDesc=document.getElementById("jsonDesc");
+
+let dataHash=document.getElementById("dataHash");
+let realHash=document.getElementById("realHash");
+
+let auctionDiv=document.getElementById("auctionDiv");
+
+let yearInput=document.getElementById("yearInput");
+let monthInput=document.getElementById("monthInput");
+let dayInput=document.getElementById("dayInput");
+let hourInput=document.getElementById("hourInput");
+let minInput=document.getElementById("minInput");
+let secInput=document.getElementById("secInput");
+
+let directPriceInput=document.getElementById("directPriceInput");
+let startPriceInput=document.getElementById("startPriceInput");
+
+let startAuctionBtn=document.getElementById("startAuctionBtn");
+
+let bidDiv=document.getElementById("bidDiv");
+
+let auctionState=document.getElementById("auctionState");
+let endTime=document.getElementById("endTime");
+let directPrice=document.getElementById("directPrice");
+let bidPrice=document.getElementById("bidPrice");
+let bidderAddr=document.getElementById("bidderAddr");
+
+let bidPriceInput=document.getElementById("bidPriceInput");
+let bidBtn=document.getElementById("bidBtn");
+let stopAuctionBtn=document.getElementById("stopAuctionBtn");
+let endBidBtn=document.getElementById("endBidBtn");
+
+let transferDiv=document.getElementById("transferDiv");
+let toAddrInput=document.getElementById("toAddrInput");
+
+let resetJSONDiv=document.getElementById("resetJSONDiv");
+
+let newTitle=document.getElementById("newTitle");
+let newDesc=document.getElementById("newDesc");
+let newImgUrl=document.getElementById("newImgUrl");
+let newImg=document.getElementById("newImg");
+let dataHash2=document.getElementById("dataHash2");
+let newHash=document.getElementById("newHash");
+
+async function initPage(){
+	nftDiv.style.display="none";
+	auctionDiv.style.display="none";
+	bidDiv.style.display="none";
+	transferDiv.style.display="none";
+	resetJSONDiv.style.display="none";
+	
+	realHash.innerHTML="";
+	newHash.innerHTML="";
+	
+	if(/^\?\d+$/.test(location.search)==false){
+		alert("error : 網址非正確參數連結！");
+		return;
+	}
+	nftID=parseInt(location.search.substring(1) );
+	
+	let data=null;
+	try{
+		let isToken=await contract.isToken(nftID);
+		if(!isToken){
+			alert("error : 此id的NFT不存在！");
+			return;
+		}
+		
+		data=await contract.tokenData(nftID);
+	}catch(err){
+		alert(err.message);
+		return;
+	}
+	
+	let uri=data.uri;
+	
+	let isLoadJSON=false;
+	if(/^data:application\/json;base64,/.test(uri) ){
+		uri=uri.replace(/^data:application\/json;base64,/, "");
+		
+		try{
+			uri=atob(uri);
+			
+			let jsonObj=JSON.parse(decodeURIComponent(escape(uri) ) );
+			
+			uri=jsonObj.image;
+		
+			if(jsonObj.name !== undefined){
+				jsonTitle.innerHTML=toSafeText(jsonObj.name);
+				newTitle.value=toSafeInputText(jsonObj.name);
+			}
+			
+			if(jsonObj.description !== undefined){
+				jsonDesc.innerHTML=toSafeText(jsonObj.description);
+				newDesc.value=toSafeInputText(jsonObj.description);
+			}
+			
+		}
+		catch(err){
+			console.log(uri);
+			console.log(err);
+			uri="";
+		}
+		
+		uri=toSafeUrl(uri);
+		
+		if(/^ipfs:\/\//.test(uri) ){
+			uri=uri.replace(/^ipfs:\/\//, "https://ipfs.io/ipfs/");
+		}
+		
+		imgLink.setAttribute("onclick", "showImgWnd('" + uri + "')");
+		img.src=uri;
+		newImgUrl.value=uri;
+		newImg.src=uri;
+		
+		showImgHash(uri, false);
+	}
+	else{
+		if(/^ipfs:\/\//.test(uri) ){
+			uri=uri.replace(/^ipfs:\/\//, "https://ipfs.io/ipfs/");
+		}
+		
+		imgLinks.setAttribute("onclick", "");
+		imgs.src="";
+		loadJSONImgView(uri);
+	}
+	
+	let titleStr=data.title;
+	
+	titleStr=toSafeText(titleStr);
+	title.innerHTML=nftID+ ".「"+ titleStr+ "」";
+	
+	creatorAddr.innerHTML=data.creator;
+	creatorName.innerHTML="(" + toSafeText(data.creatorName) + ")";
+	ownerAddr.innerHTML=data.owner;
+	ownerName.innerHTML="(" + toSafeText(data.ownerName) + ")";
+	
+	dataHash.innerHTML=toHexStr(data.hash, 32);
+	dataHash2.innerHTML=toHexStr(data.hash, 32);
+	
+	nftDiv.style.display="";
+	
+	let isOwner=addrEq(data.owner, userAddr);
+	let isCreator=addrEq(data.creator, userAddr);
+	
+	if(isOwner){
+		if(!data.auctionData.isActive){
+					
+			let time=new Date();
+			yearInput.value=time.getFullYear();
+			monthInput.value=time.getMonth()+1;
+			dayInput.value=time.getDate();
+			hourInput.value=time.getHours();
+			minInput.value=0;
+			secInput.value=0;
+			
+			auctionDiv.style.display="";
+			transferDiv.style.display="";
+		}
+		
+		resetJSONDiv.style.display="";
+	}
+	else if(isCreator){
+		resetJSONDiv.style.display="";
+	}
+	
+	if(data.auctionData.isActive){
+		endTime.innerHTML=timestampToStr(data.auctionData.endTime);
+		
+		directPrice.innerHTML=utils.formatEther(data.auctionData.directPrice);
+		bidPrice.innerHTML=utils.formatEther(data.auctionData.nowPrice);
+		bidderAddr.innerHTML=data.auctionData.bidder;
+		
+		let time=Math.floor(Date.now()/1000);
+		let isEnd=(time>=data.auctionData.endTime);
+		
+		if(!isEnd){
+			auctionState.innerHTML="拍賣中";
+		}
+		else{
+			auctionState.innerHTML="拍賣時間結束，等待直購或完成交易";
+		}
+		
+		bidBtn.disabled=isEnd;
+		
+		let isBidder=addrEq(data.auctionData.bidder, userAddr);
+		let noBidder=addrEq(data.auctionData.bidder, zeroAddr);
+	
+		stopAuctionBtn.disabled=!(isOwner && (noBidder || isBidder) );
+		
+		endBidBtn.disabled=!(isEnd && (isBidder || (isOwner && !noBidder) ) );
+		
+		bidDiv.style.display="";
+	}
+}
+
+async function loadJSONImgView(url){
+	var xhttp = new XMLHttpRequest();
+	
+	xhttp.onload = function() {
+		if(this.status == 200) {
+			try{
+				let jsonObj=JSON.parse(decodeURIComponent(escape(this.responseText) ) );
+				
+				if(jsonObj.name !== undefined){
+					jsonTitle.innerHTML=toSafeText(jsonObj.name);
+					newTitle.value=toSafeInputText(jsonObj.name);
+				}
+				
+				if(jsonObj.description !== undefined){
+					jsonDesc.innerHTML=toSafeText(jsonObj.description);
+					newDesc.value=toSafeInputText(jsonObj.description);
+				}
+				
+				let uri=jsonObj.image;
+				
+				if(/^ipfs:\/\//.test(uri) ){
+					uri=uri.replace(/^ipfs:\/\//, "https://ipfs.io/ipfs/");
+				}
+				
+				uri=toSafeUrl(uri);
+				
+				imgLink.setAttribute("onclick", "showImgWnd('" + uri + "')");
+				img.src=uri;
+				newImgUrl.value=uri;
+				newImg.src=uri;
+				
+				showImgHash(uri, false);
+			}
+			catch(err){
+				console.log(this.responseText);
+				console.log(err);
+			}
+		}
+	};
+	
+	xhttp.open("GET", url, true);
+	xhttp.send();
+}
+
+function showImgHash(uri, isNewHash){
+	if(/^data:image\/\w+;base64,/.test(uri) ){
+		uri=uri.replace(/^data:image\/\w+;base64,/, "");
+		
+		try{
+			let imgData=atob(uri)
+			
+			var array=new Uint8Array(imgData.length)
+			for(let i=0; i<imgData.length; i++){
+				array[i]=imgData.charCodeAt(i);
+			}
+			
+			let hash=sha256(array);
+			if(isNewHash){
+				newHash.innerHTML=hash;
+			}
+			else{
+				realHash.innerHTML=hash;
+				newHash.innerHTML=hash;
+			}
+		}
+		catch(err){
+			console.log(err);
+		}
+	}
+	else{
+		loadImgHash(uri, isNewHash);
+	}
+}
+
+async function loadImgHash(url, isNewHash){
+	//以下的方式無法讀到原始資料
+	/*let img = new Image();
+	img.crossOrigin = "Anonymous";
+	img.addEventListener("load", imageReceived, false);
+	img.src = url;
+	
+	function imageReceived() {
+		let canvas = document.createElement("canvas");
+		let context = canvas.getContext("2d");
+		
+		canvas.width = img.width;
+		canvas.height = img.height;
+		
+		context.drawImage(img, 0, 0);
+		
+		showImgHash(canvas.toDataURL(), isNewHash);
+	}*/
+	
+	//以下的方式可能遇到CORS policy問題
+	var xhttp = new XMLHttpRequest();
+	
+	xhttp.onload = function() {
+		if(this.status == 200) {
+			try{
+				var array = new Uint8Array(this.response);
+				
+				let hash=sha256(array);
+				if(isNewHash){
+					newHash.innerHTML=hash;
+				}
+				else{
+					realHash.innerHTML=hash;
+					newHash.innerHTML=hash;
+				}
+			}
+			catch(err){
+				console.log(err);
+			}
+		}
+	};
+	
+	xhttp.open("GET", url, true);
+	xhttp.responseType="arraybuffer";
+	xhttp.send();
+}
+
+////////////////////////////////////////////////////////////////////
+
+async function showNewImg(){
+	let url=toSafeUrl(newImgUrl.value);
+	newImg.src=url;
+	
+	newHash.innerHTML="";
+	if(/^http(s)?:\/\/.+/.test(url) || /^data:image/.test(url) ){
+		showImgHash(url, true);
+	}
+}
+
+////////////////////////////////////////////////////////////////////
+
+async function startAuction(){
+
+	let time=toTimestamp(yearInput.value, monthInput.value, dayInput.value, hourInput.value, minInput.value, secInput.value);
+	if(time==null){
+		alert("error:時間格式輸入錯誤");
+		return;
+	}
+	
+	if(!isNum(directPriceInput.value) ){
+		alert("error:直購價輸入錯誤");
+		return;
+	}
+	
+	if(!isNum(startPriceInput.value) ){
+		alert("error:起標價輸入錯誤");
+		return;
+	}
+
+	let directPrice=utils.parseEther(directPriceInput.value);
+	let startPrice=utils.parseEther(startPriceInput.value);
+	
+	if(directPrice.eq("0") ){
+		alert("error:直購價不得為0");
+		return;
+	}
+	
+	if(startPrice.eq("0") ){
+		alert("error:起標價不得為0");
+		return;
+	}
+	
+	if(startPrice.gt(directPrice) ){
+		alert("error:起標價比直購價還高");
+		return;
+	}
+	
+	try{
+		let tx = await contractSigner.startAuction(nftID, time, directPrice, startPrice);
+		
+		await tx.wait();
+		reload();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function directBuy(){
+	try{
+		let amount = utils.parseEther(directPrice.innerHTML);
+		let balance = utils.parseEther(balanceInput.value);
+		
+		if(amount.gt(balance) ){
+			alert("error:餘額不足");
+			return;
+		}
+		
+		let options = {value: amount};
+		let tx = await contractSigner.bid(nftID, options);
+		
+		await tx.wait();
+		reload();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function bid(){
+	try{
+		if(!isNum(bidPriceInput.value) ){
+			alert("error:投標價輸入錯誤");
+			return;
+		}
+		
+		let amount = utils.parseEther(bidPriceInput.value);
+		let nowPrice = utils.parseEther(bidPrice.innerHTML);
+		let balance = utils.parseEther(balanceInput.value);
+		
+		if(addrEq(bidderAddr.innerHTML, zeroAddr)){
+			if(nowPrice.gt(amount) ){
+				alert("error:投標價太小");
+				return;
+			}
+		}
+		else if(nowPrice.gte(amount) ){
+			alert("error:投標價太小");
+			return;
+		}
+		
+		if(amount.gt(balance) ){
+			alert("error:餘額不足");
+			return;
+		}
+		
+		let options = {value: amount};
+		let tx = await contractSigner.bid(nftID, options);
+		
+		await tx.wait();
+		reload();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function stopAuction(){
+	try{
+		let tx = await contractSigner.stopAuction(nftID);
+		
+		await tx.wait();
+		reload();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function endBid(){
+	try{
+		let tx = await contractSigner.bidEnd(nftID);
+		
+		await tx.wait();
+		reload();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function transfer(){
+	try{
+		let toAddr=toAddrInput.value;
+		if(!utils.isAddress(toAddr) ){
+			alert("error:請輸入正確格式的地址");
+			return;
+		}
+		
+		let tx = await contractSigner.transferFrom(userAddr, toAddr, nftID);
+		
+		await tx.wait();
+		reload();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+async function resetJSON(){
+	
+	if(newImgUrl.value==""){
+		alert("error:請輸入網址");
+		return;
+	}
+	
+	let jsonStr="";
+	if(newTitle.value!=""){
+		jsonStr+='"name":"' +toJSONText(newTitle.value) + '",';
+	}
+	if(newDesc.value!=""){
+		jsonStr+='"description":"' + toJSONText(newDesc.value) + '",';
+	}
+	jsonStr='{' + jsonStr + '"image":"' + newImgUrl.value + '"}';
+	
+	let uri="data:application/json;base64," + btoa(Utf8Encode(jsonStr) );
+	
+	try{
+		let tx = await contractSigner.changeURI(nftID, uri);
+		
+		await tx.wait();
+		reload();
+	}catch(err){
+		if(err.code==4001){//reject
+			alert("User rejected tx.");
+		}
+		else{
+			alert(err.message);
+		}
+	}
+}
+
+</script>
+</html>
