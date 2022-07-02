@@ -145,7 +145,7 @@ async function mintNFT(){
 	let uri="data:application/json;base64," + btoa(Utf8Encode(jsonStr) );
 	
 	try{
-		let tx = await contractSigner.mint(uri, newTitleStr, "0x"+newHash.innerHTML );
+		let tx = await contractSigner.mint(uri, newTitle.value, "0x"+newHash.innerHTML );
 		
 		await tx.wait();
 		
