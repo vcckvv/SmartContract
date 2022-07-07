@@ -123,6 +123,33 @@ async function showNFTList(pageNum){
 	
 	let startIndex=nftCount - pageNum*pageSize - getCount;
 	
+	let nowNftCount=0;
+	try{
+		switch(listType){
+		case "all":
+		case "create":{
+			nowNftCount=nftCount;//只增不減，所以不檢查
+			break;
+		}
+		case "own":{
+			nowNftCount=await contract.getOwnCount(listAddr);
+			break;
+		}
+		case "auction":{
+			nowNftCount=await contract.getAuctionCount(listAddr);
+			break;
+		}
+		}
+	}catch(err){
+		alert(err.message);
+		return;
+	}
+	if(nowNftCount!=nftCount){
+		alert("列表數目有變，進行頁面更新");
+		reload();
+		return;
+	}
+	
 	let data=null;
 	try{
 		switch(listType){
