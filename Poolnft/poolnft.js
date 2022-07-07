@@ -144,7 +144,7 @@ async function showNFTList(pageNum){
 		alert(err.message);
 		return;
 	}
-	if(nowNftCount!=nftCount){
+	if(parseInt(nowNftCount)!=nftCount){
 		alert("列表數目有變，進行頁面更新");
 		reload();
 		return;
