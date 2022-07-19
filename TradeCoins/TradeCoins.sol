@@ -299,7 +299,7 @@ library TradeCoinsLib {
 			else{
 				t1.transfer(msg.sender, value);
 			}
-			eventTransfer(order.pairID, false, address(this), msg.sender, value);
+			eventTransfer(order.pairID, true, address(this), msg.sender, value);
 
 			return 0;
 		}
