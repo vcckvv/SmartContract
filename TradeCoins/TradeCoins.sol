@@ -189,7 +189,19 @@ library TradeCoinsLib {
 		Order memory order=tradeCoins.getOrder(orderID);
 
 		uint chgValue=value*order.price/tradeCoins.cnPriceStd();//優先以訂單的價格為主
-		if(chgValue>=order.value){
+
+		if(chgValue==0){//低於最低可交易值，把剩下的錢還回去
+			if(tokenAddr2==tradeCoins.cnOrgCoin() ){
+				payable(msg.sender).transfer(value);
+			}
+			else{
+				t2.transfer(msg.sender, value);
+			}
+			eventTransfer(order.pairID, false, address(this), msg.sender, value);
+
+			return 0;
+		}
+		else if(chgValue>=order.value){
 			if(tokenAddr1==tradeCoins.cnOrgCoin() ){
 				sendOrgCoin(msg.sender, order.value);
 			}
@@ -279,7 +291,19 @@ library TradeCoinsLib {
 		Order memory order=tradeCoins.getOrder(orderID);
 
 		uint chgValue=value*tradeCoins.cnPriceStd()/order.price;//優先以訂單的價格為主
-		if(chgValue>=order.value){
+
+		if(chgValue==0){//低於最低可交易值，把剩下的錢還回去
+			if(tokenAddr1==tradeCoins.cnOrgCoin() ){
+				payable(msg.sender).transfer(value);
+			}
+			else{
+				t1.transfer(msg.sender, value);
+			}
+			eventTransfer(order.pairID, false, address(this), msg.sender, value);
+
+			return 0;
+		}
+		else if(chgValue>=order.value){
 			if(tokenAddr2==tradeCoins.cnOrgCoin() ){
 				sendOrgCoin(msg.sender, order.value);
 			}
@@ -570,7 +594,7 @@ contract TradeCoins {
 		}
 		
 		if(isOrder){
-			require(value*price/cnPriceStd>0);
+			require(price>0 && value*price/cnPriceStd>0);//不能低於最小可交易值
 		}
 		TradeCoinsLib.eventTransfer(pairID, false, msg.sender, address(this), value);
 
@@ -669,6 +693,7 @@ contract TradeCoins {
 		return value;
 	}
 
+	//市價單則設price=0
 	function buy(uint32 pairID, uint price, uint value, bool isOrder) public payable {
 		require(pairID<tokenPairNum && value>0);
 
@@ -688,7 +713,7 @@ contract TradeCoins {
 		}
 		
 		if(isOrder){
-			require(price>0 && value*cnPriceStd/price>0);
+			require(price>0 && value*cnPriceStd/price>0);//不能低於最小可交易值
 		}
 		TradeCoinsLib.eventTransfer(pairID, true, msg.sender, address(this), value);
 
