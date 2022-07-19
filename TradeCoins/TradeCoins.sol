@@ -669,7 +669,6 @@ contract TradeCoins {
 		return value;
 	}
 
-	//市價單則設price=0
 	function buy(uint32 pairID, uint price, uint value, bool isOrder) public payable {
 		require(pairID<tokenPairNum && value>0);
 
