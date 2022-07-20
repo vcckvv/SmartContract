@@ -597,7 +597,8 @@ async function timerFunc(){
 	await updateState();
 	setTimeout(timerFunc, 15000);//每15秒更新一次狀態
 }
-timerFunc();
+
+setTimeout(timerFunc, 15000);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 async function onTradeCoinsBtn(){
@@ -626,6 +627,7 @@ async function onTradeCoinsBtn(){
 			document.getElementById("ownAmount2").value=utils.formatUnits(await token2Contract.balanceOf(userAddr) , token2Deci);
 		}
 		
+		updateState();
 	}catch(err){
 		alert(err.message);
 		return;
@@ -874,6 +876,7 @@ async function onBuyBtn(){
 		await tx.wait();
 		
 		updateBalance();
+		updateState();
 	}catch(err){
 		if(err.code==4001){//reject
 			alert("User rejected tx.");
@@ -942,6 +945,7 @@ async function onSellBtn(){
 		await tx.wait();
 		
 		updateBalance();
+		updateState();
 	}catch(err){
 		if(err.code==4001){//reject
 			alert("User rejected tx.");
