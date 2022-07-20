@@ -1049,7 +1049,7 @@ async function onUserBtn(){
 			
 			let showPrice=formatUnits(""+orderAr[i].price , nowPriceShf);
 			
-			str+="price: " + orderAr[i].price + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+			str+="price: " + orderAr[i].price + " (" + showPrice + " " + token1 + "/" + token2 + ")<br>";
 			
 			if(orderAr[i].isSell){
 				let showValue=utils.formatUnits(""+orderAr[i].value , token2Deci);
@@ -1116,7 +1116,7 @@ async function onOrdersBtn(){
 				
 				let showPrice=formatUnits(""+orderAr[i].price , nowPriceShf);
 				
-				str+="price: " + orderAr[i].price + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+				str+="price: " + orderAr[i].price + " (" + showPrice + " " + token1 + "/" + token2 + ")<br>";
 				
 				if(orderAr[i].isSell){
 					let showValue=utils.formatUnits(""+orderAr[i].value , token2Deci);
@@ -1204,7 +1204,7 @@ async function showLog(){
 					str+="buyUser: " + data[i].args[2] + "<br>";
 					str+="sellUser: " + data[i].args[3] + "<br>";
 					str+="pairID: " + data[i].args[4] + "<br>";
-					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token1 + "/" + token2 + ")<br>";
 					
 					str+="buyValue: " + data[i].args[6] + " (" + showValue1 + " " + token1 + ")<br>";
 					str+="sellValue: " + data[i].args[7] + " (" + showValue2 + " " + token2 + ")<br>";
@@ -1218,7 +1218,7 @@ async function showLog(){
 					str+="buyUser: " + data[i].args[2] + "<br>";
 					str+="sellUser: " + data[i].args[3] + "<br>";
 					str+="pairID: " + data[i].args[4] + "<br>";
-					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token1 + "/" + token2 + ")<br>";
 					
 					str+="buyValue: " + data[i].args[6] + " (" + showValue1 + " " + token1 + ")<br>";
 					str+="sellValue: " + data[i].args[7] + " (" + showValue2 + " " + token2 + ")<br>";
@@ -1232,7 +1232,7 @@ async function showLog(){
 					str+="buyUser: " + data[i].args[2] + "<br>";
 					str+="sellUser: " + data[i].args[3] + "<br>";
 					str+="pairID: " + data[i].args[4] + "<br>";
-					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token2 + "/" + token1 + ")<br>";
+					str+="price: " + data[i].args[5] + " (" + showPrice + " " + token1 + "/" + token2 + ")<br>";
 					
 					str+="buyValue: " + data[i].args[6] + " (" + showValue1 + " " + token1 + ")<br>";
 					str+="sellValue: " + data[i].args[7] + " (" + showValue2 + " " + token2 + ")<br>";
