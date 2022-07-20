@@ -595,7 +595,7 @@ function onSelTradePair(){
 
 async function timerFunc(){
 	await updateState();
-	setTimeout(timerFunc, 15000);//每15秒更新一次狀態
+	setTimeout(timerFunc, 15000);//每15秒更新一次狀態，因為JS是單一執行緒所以不怕和其他地方觸發的updateState()撞到
 }
 
 setTimeout(timerFunc, 15000);
