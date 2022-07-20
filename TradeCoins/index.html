@@ -876,7 +876,6 @@ async function onBuyBtn(){
 		await tx.wait();
 		
 		updateBalance();
-		onTradeCoinsBtn();
 	}catch(err){
 		if(err.code==4001){//reject
 			alert("User rejected tx.");
@@ -945,7 +944,6 @@ async function onSellBtn(){
 		await tx.wait();
 		
 		updateBalance();
-		onTradeCoinsBtn();
 	}catch(err){
 		if(err.code==4001){//reject
 			alert("User rejected tx.");
