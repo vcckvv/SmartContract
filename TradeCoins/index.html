@@ -593,12 +593,11 @@ function onSelTradePair(){
 	}
 }
 
-setTimeout(timerFunc, 15000);//每15秒更新一次狀態
-
 async function timerFunc(){
 	await updateState();
-	setTimeout(timerFunc, 15000);
+	setTimeout(timerFunc, 15000);//每15秒更新一次狀態
 }
+timerFunc();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 async function onTradeCoinsBtn(){
@@ -627,7 +626,6 @@ async function onTradeCoinsBtn(){
 			document.getElementById("ownAmount2").value=utils.formatUnits(await token2Contract.balanceOf(userAddr) , token2Deci);
 		}
 		
-		updateState();
 	}catch(err){
 		alert(err.message);
 		return;
