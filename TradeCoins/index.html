@@ -611,6 +611,16 @@ async function onTradeCoinsBtn(){
 	document.getElementById(showPage+"Tab").setAttribute("class", "tabSel");
 	
 	try{
+		updateOwnAmount();
+		updateState();
+	}catch(err){
+		alert(err.message);
+		return;
+	}
+}
+
+async function updateOwnAmount(){
+	try{
 		if(token1Addr==orgAddr){
 			await updateBalance();
 			document.getElementById("ownAmount1").value=document.getElementById("showBalance").value;
@@ -626,8 +636,6 @@ async function onTradeCoinsBtn(){
 		else{
 			document.getElementById("ownAmount2").value=utils.formatUnits(await token2Contract.balanceOf(userAddr) , token2Deci);
 		}
-		
-		updateState();
 	}catch(err){
 		alert(err.message);
 		return;
@@ -876,6 +884,7 @@ async function onBuyBtn(){
 		await tx.wait();
 		
 		updateBalance();
+		updateOwnAmount();
 		updateState();
 	}catch(err){
 		if(err.code==4001){//reject
@@ -945,6 +954,7 @@ async function onSellBtn(){
 		await tx.wait();
 		
 		updateBalance();
+		updateOwnAmount();
 		updateState();
 	}catch(err){
 		if(err.code==4001){//reject
